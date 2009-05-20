@@ -85,6 +85,8 @@ int32_t clamavc_connect PARAMS((CLAMAVC * clamp));
 // disconnects from remote ClamAV daemon
 void clamavc_disconnect PARAMS((CLAMAVC * clamp));
 
+// reads a data stream from the ClamAV daemon
+int32_t clamavc_read PARAMS((CLAMAVC * clamp, char * dst, ssize_t len));
 
 /////////////////
 //             //
@@ -288,7 +290,7 @@ int32_t clamavc_ping(CLAMAVC * clamp)
       return(errno);
    };
 
-   if ((len = read(clamp->s, buff, 1023)) == -1)
+   if ((len = clamavc_read(clamp, buff, 1023)) == -1)
    {
       clamavc_disconnect(clamp);
       return(errno);
@@ -299,6 +301,49 @@ int32_t clamavc_ping(CLAMAVC * clamp)
       printf("<<< %s\n", buff);
 
    return(0);
+}
+
+
+/// reads a data stream from the ClamAV daemon
+/// @param[in]  clamp    pointer to ClamAV Client session data
+/// @param[out] dst      pointer to read buffer
+/// @param[in]  len      length of read buffer
+int32_t clamavc_read(CLAMAVC * clamp, char * dst, ssize_t len)
+{
+   ssize_t pos;
+   ssize_t added;
+
+   if (!(clamp))
+   {
+      errno = EINVAL;
+      return(-1);
+   };
+
+   pos   = 0;
+   added = 0;
+
+   if ((added = read(clamp->s, &dst[pos], len-pos-1)) == -1)
+      return(-1);
+   pos += added;
+   dst[pos] = '\0';
+
+   if (!(pos))
+      return(pos);
+
+   while(dst[pos-1])
+   {
+      if ((added = read(clamp->s, &dst[pos], len-pos-1)) == -1)
+         return(-1);
+      pos += added;
+      dst[pos] = '\0';
+      if (pos >= (len-1))
+      {
+         errno = ENOBUFS;
+         return(-1);
+      };
+   };
+
+   return(pos);
 }
 
 
@@ -381,7 +426,7 @@ const char * clamavc_version(CLAMAVC * clamp)
       return(NULL);
    };
 
-   if ((len = read(clamp->s, clamp->version, CLAMAVC_VER_LEN-1)) == -1)
+   if ((len = clamavc_read(clamp, clamp->version, CLAMAVC_VER_LEN-1)) == -1)
    {
       clamavc_disconnect(clamp);
       return(NULL);
