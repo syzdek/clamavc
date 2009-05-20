@@ -84,19 +84,19 @@
 // Based on the Macros from OpenLDAP's library header.
 #ifdef WIN32
 #   ifdef OTADM_LIBS_DYNAMIC
-#      define OTADM_F(type)   extern __declspec(dllexport) type   ///< used for library calls
-#      define OTADM_V(type)   extern __declspec(dllexport) type   ///< used for library calls
+#      define CLAMAVC_F(type)   extern __declspec(dllexport) type   ///< used for library calls
+#      define CLAMAVC_V(type)   extern __declspec(dllexport) type   ///< used for library calls
 #   else
-#      define OTADM_F(type)   extern __declspec(dllimport) type   ///< used for library calls
-#      define OTADM_V(type)   extern __declspec(dllimport) type   ///< used for library calls
+#      define CLAMAVC_F(type)   extern __declspec(dllimport) type   ///< used for library calls
+#      define CLAMAVC_V(type)   extern __declspec(dllimport) type   ///< used for library calls
 #   endif
 #else
 #   ifdef OTADM_LIBS_DYNAMIC
-#      define OTADM_F(type)   type                                ///< used for library calls
-#      define OTADM_V(type)   type                                ///< used for library calls
+#      define CLAMAVC_F(type)   type                                ///< used for library calls
+#      define CLAMAVC_V(type)   type                                ///< used for library calls
 #   else
-#      define OTADM_F(type)   extern type                         ///< used for library calls
-#      define OTADM_V(type)   extern type                         ///< used for library calls
+#      define CLAMAVC_F(type)   extern type                         ///< used for library calls
+#      define CLAMAVC_V(type)   extern type                         ///< used for library calls
 #   endif
 #endif
 
@@ -149,51 +149,51 @@ typedef struct clamavc CLAMAVC;
 BEGIN_C_DECLS
 
 // closes ClamAV client library session and frees resources
-OTADM_F(void) clamavc_close PARAMS((CLAMAVC * clamp));
+CLAMAVC_F(void) clamavc_close PARAMS((CLAMAVC * clamp));
 
 // recursively scans a directory without stopping if a virus is found
-//OTADM_F(int32_t) clamavc_contscan PARAMS((CLAMAVC * clamp,
+//CLAMAVC_F(int32_t) clamavc_contscan PARAMS((CLAMAVC * clamp,
 // const char * dir));
 
 // recursively scans a directory without stopping if a virus is found
-//OTADM_F(int32_t) clamavc_contscan_s PARAMS((CLAMAVC * clamp,
+//CLAMAVC_F(int32_t) clamavc_contscan_s PARAMS((CLAMAVC * clamp,
 // const char * dir));
 
 // frees memory allocated by library
-OTADM_F(char *) clamavc_free PARAMS((CLAMAVC * clamp, void * ptr));
+CLAMAVC_F(char *) clamavc_free PARAMS((CLAMAVC * clamp, void * ptr));
 
 // initialize ClamAV client library session
-OTADM_F(CLAMAVC *) clamavc_initialize PARAMS((void));
+CLAMAVC_F(CLAMAVC *) clamavc_initialize PARAMS((void));
 
 // sends chuncked data to the server
-OTADM_F(int32_t) clamavc_instream PARAMS((CLAMAVC * clamp, uint8_t * src,
+CLAMAVC_F(int32_t) clamavc_instream PARAMS((CLAMAVC * clamp, uint8_t * src,
    uint32_t len));
 
 //OTADM_F(int32_t) clamavc_multiscan PARAMS((CLAMAVC * clamp));
 
 // checks the daemon's state
-OTADM_F(int32_t) clamavc_ping PARAMS((CLAMAVC * clamp));
+CLAMAVC_F(int32_t) clamavc_ping PARAMS((CLAMAVC * clamp));
 
 // scans a file or directory without archive support enabled
-OTADM_F(int32_t) clamavc_rawscan PARAMS((CLAMAVC * clamp, const char * path));
+CLAMAVC_F(int32_t) clamavc_rawscan PARAMS((CLAMAVC * clamp, const char * path));
 
 // reloads the daemon's databases
-OTADM_F(int32_t) clamavc_reload PARAMS((CLAMAVC * clamp));
+CLAMAVC_F(int32_t) clamavc_reload PARAMS((CLAMAVC * clamp));
 
 // scans a file or directory with archive support enabled
-OTADM_F(int32_t) clamavc_scan PARAMS((CLAMAVC * clamp, const char * path));
+CLAMAVC_F(int32_t) clamavc_scan PARAMS((CLAMAVC * clamp, const char * path));
 
 // sets library options
-OTADM_F(int32_t) clamavc_set_opt PARAMS((CLAMAVC * clamp, uint32_t opt,
+CLAMAVC_F(int32_t) clamavc_set_opt PARAMS((CLAMAVC * clamp, uint32_t opt,
    const void * valp));
 
 // shuts down the server
-OTADM_F(int32_t) clamavc_shutdown PARAMS((CLAMAVC * clamp));
+CLAMAVC_F(int32_t) clamavc_shutdown PARAMS((CLAMAVC * clamp));
 
-//OTADM_F(int32_t) clamavc_stats PARAMS((CLAMAVC * clamp));
+//CLAMAVC_F(int32_t) clamavc_stats PARAMS((CLAMAVC * clamp));
 
 // returns daemon's version
-OTADM_F(char *) clamavc_version PARAMS((CLAMAVC * clamp));
+CLAMAVC_F(const char *) clamavc_version PARAMS((CLAMAVC * clamp));
 
 END_C_DECLS
 #endif /* end of header */
