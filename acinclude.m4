@@ -20,32 +20,7 @@
 #
 #   @ACS_LICENSE_HEADER_END@
 #
-#   Makefile - automate compiling on a unix platform
+#   acinclude.m4 - custom m4 macros used by configure.ac
 #
 
-CC	?=  gcc
-LIBTOOL	?= libtool
-CFLAGS	?= -g -O2 -W -Wall -Werror -Iinclude
-LDFLAGS	?= -g -O2 -export-symbols lib/libclamavc.sym -rpath /usr/local/lib -Llib
-
-all: clamavc libclamavc.la
-
-libclamavc.la: Makefile lib/libclamavc.c include/clamavc.h lib/libclamavc.sym
-	$(LIBTOOL) --mode=compile --tag=CC $(CC) $(CFLAGS)  -c lib/libclamavc.c
-	$(LIBTOOL) --mode=link    --tag=CC $(CC) $(LDFLAGS) -o libclamavc.la libclamavc.lo
-
-clamavc: Makefile src/clamavc.c libclamavc.la
-	$(LIBTOOL) --mode=compile --tag=CC $(CC) $(CFLAGS)  -c src/clamavc.c
-	$(LIBTOOL) --mode=link    --tag=CC $(CC) $(LDFLAGS) -o clamavc clamavc.lo -lclamavc
-
-clean:
-	$(LIBTOOL) --mode=clean rm -f clamavc clamavc.lo
-	$(LIBTOOL) --mode=clean rm -f libclamavc.la libclamavc.lo
-	rm -fR .libs
-	rm -f a.out
-
-install: all
-
-uninstall:
-
-# end of Makefile
+# end of M4 file
