@@ -363,4 +363,36 @@ int32_t clamavc_set_opt(CLAMAVC * clamp, uint32_t opt, const void * valp)
 }
 
 
+/// returns daemon's version
+/// @param[in]  clamp    pointer to ClamAV Client session data
+const char * clamavc_version(CLAMAVC * clamp)
+{
+   ssize_t len;
+
+   if (clamavc_connect(clamp))
+      return(NULL);
+
+   if (clamp->verbose > 1)
+      printf(">>> zVERSION\n");
+
+   if ((len = write(clamp->s, "zVERSION", 9)) == -1)
+   {
+      clamavc_disconnect(clamp);
+      return(NULL);
+   };
+
+   if ((len = read(clamp->s, clamp->version, CLAMAVC_VER_LEN-1)) == -1)
+   {
+      clamavc_disconnect(clamp);
+      return(NULL);
+   };
+
+   clamp->version[len] = '\0';
+   if (clamp->verbose > 1)
+      printf("<<< %s\n", clamp->version);
+
+   return(clamp->version);
+}
+
+
 /* end of source code */
