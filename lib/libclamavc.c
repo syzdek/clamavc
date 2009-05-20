@@ -104,6 +104,8 @@ void clamavc_close(CLAMAVC * clamp)
    if (clamp->socket)
       free(clamp->socket);
 
+   clamavc_disconnect(clamp);
+
    memset(clamp, 0, sizeof(CLAMAVC));
    free(clamp);
 
@@ -162,6 +164,10 @@ int32_t clamavc_connect(CLAMAVC * clamp)
             if (clamp->verbose)
                printf("Connected to %s.\n", clamp->host);
             //fcntl(s, F_SETFL, O_NONBLOCK);
+            if (clamp->verbose > 1)
+               printf(">>> zIDSESSION\n");
+            if ((write(s, "zIDSESSION", 11)) == -1)
+               return(errno);
             clamp->s = s;
             return(0);
          };
@@ -201,6 +207,10 @@ int32_t clamavc_connect(CLAMAVC * clamp)
             if (clamp->verbose)
                printf("Connected to %s.\n", clamp->host);
             //fcntl(s, F_SETFL, O_NONBLOCK);
+            if (clamp->verbose > 1)
+               printf(">>> zIDSESSION\n");
+            if ((write(s, "zIDSESSION", 11)) == -1)
+               return(errno);
             clamp->s = s;
             return(0);
          };
@@ -223,6 +233,9 @@ void clamavc_disconnect(CLAMAVC * clamp)
       return;
    if (clamp->s == -1)
       return;
+   if (clamp->verbose > 1)
+      printf(">>> zEND\n");
+   write(clamp->s, "zEND", 5);
    close(clamp->s);
    clamp->s = -1;
    return;
@@ -266,15 +279,24 @@ int32_t clamavc_ping(CLAMAVC * clamp)
    if (clamavc_connect(clamp))
       return(errno);
 
-   printf(">>> zPING\n");
+   if (clamp->verbose > 1)
+      printf(">>> zPING\n");
+
    if ((len = write(clamp->s, "zPING", 6)) == -1)
+   {
+      clamavc_disconnect(clamp);
       return(errno);
+   };
 
    if ((len = read(clamp->s, buff, 1023)) == -1)
+   {
+      clamavc_disconnect(clamp);
       return(errno);
+   };
 
    buff[len] = '\0';
-   printf("<<< %s\n", buff);
+   if (clamp->verbose > 1)
+      printf("<<< %s\n", buff);
 
    return(0);
 }
