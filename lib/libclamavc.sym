@@ -1,0 +1,44 @@
+#
+#   Clam Antivirus Client Library
+#   Copyright (C) 2009 Alaska Communications Systems Group, Inc
+#
+#   @ACS_LICENSE_HEADER_START@
+#
+#   This program is free software; you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation; either version 2 of the License, or
+#   (at your option) any later version.
+#
+#   This program is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU General Public License for more details.
+#
+#   You should have received a copy of the GNU General Public License along
+#   with this program; if not, write to the Free Software Foundation, Inc.,
+#   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+#   @ACS_LICENSE_HEADER_END@
+#
+#   lib/libclamavc.sym - list of symbols to export in libclamavc.la
+#
+#   Build:
+#      CFLAGS="-g -O2 -W -Wall -Werror -I../include"
+#      LDFLAGS="-g -O2 -export-symbols libclamavc.sym -rpath /usr/local/lib"
+#      export CFLAGS LDFLAGS
+#
+#      libtool --mode=compile gcc ${CFLAGS}  -c libclamavc.c
+#      libtool --mode=link    gcc ${LDFLAGS} -o libclamavc.la libclamavc.lo
+#
+#   Install:
+#      libtool --mode=install install -c libclamavc.la /usr/local/lib/libclamavc.la
+#
+#   Uninstall:
+#      libtool --mode=uninstall rm -f /usr/local/lib/libclamavc.la
+#
+#   Clean:
+#      libtool --mode=clean rm -f libclamavc.la libclamavc.lo
+#
+clamavc_close
+clamavc_initialize
+# end of symbol export file
