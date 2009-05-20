@@ -179,8 +179,8 @@ int main (int argc, char * argv[])
             break;
 
          case 'v':
-            clamavc_set_opt(clamp, CLAMAVC_OVERBOSE, &verbose);
             verbose++;
+            clamavc_set_opt(clamp, CLAMAVC_OVERBOSE, &verbose);
             break;
 
          case 'V':
