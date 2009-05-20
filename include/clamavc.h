@@ -108,6 +108,7 @@
 ///////////////
 
 #include <inttypes.h>
+#include <sys/types.h>
 
 
 ///////////////////
@@ -115,6 +116,19 @@
 //  Definitions  //
 //               //
 ///////////////////
+
+// ClamAV Client defaults
+#define CLAMAVC_HOST               "localhost"
+#define CLAMAVC_PORT               3310
+#define CLAMAVC_SOCKET             NULL
+#define CLAMAVC_STREAMMAXLEN       4096
+
+// ClamAV Client options
+#define CLAMAVC_OHOST              0x01
+#define CLAMAVC_OPORT              0x02
+#define CLAMAVC_OSOCKET            0x03
+#define CLAMAVC_OSTREAMMAXLEN      0x04
+#define CLAMAVC_OVERBOSE           0x05
 
 
 /////////////////
@@ -137,8 +151,49 @@ BEGIN_C_DECLS
 // closes ClamAV client library session and frees resources
 OTADM_F(void) clamavc_close PARAMS((CLAMAVC * clamp));
 
+// recursively scans a directory without stopping if a virus is found
+//OTADM_F(int32_t) clamavc_contscan PARAMS((CLAMAVC * clamp,
+// const char * dir));
+
+// recursively scans a directory without stopping if a virus is found
+//OTADM_F(int32_t) clamavc_contscan_s PARAMS((CLAMAVC * clamp,
+// const char * dir));
+
+// frees memory allocated by library
+OTADM_F(char *) clamavc_free PARAMS((CLAMAVC * clamp, void * ptr));
+
 // initialize ClamAV client library session
 OTADM_F(CLAMAVC *) clamavc_initialize PARAMS((void));
+
+// sends chuncked data to the server
+OTADM_F(int32_t) clamavc_instream PARAMS((CLAMAVC * clamp, uint8_t * src,
+   uint32_t len));
+
+//OTADM_F(int32_t) clamavc_multiscan PARAMS((CLAMAVC * clamp));
+
+// checks the daemon's state
+OTADM_F(int32_t) clamavc_ping PARAMS((CLAMAVC * clamp));
+
+// scans a file or directory without archive support enabled
+OTADM_F(int32_t) clamavc_rawscan PARAMS((CLAMAVC * clamp, const char * path));
+
+// reloads the daemon's databases
+OTADM_F(int32_t) clamavc_reload PARAMS((CLAMAVC * clamp));
+
+// scans a file or directory with archive support enabled
+OTADM_F(int32_t) clamavc_scan PARAMS((CLAMAVC * clamp, const char * path));
+
+// sets library options
+OTADM_F(int32_t) clamavc_set_opt PARAMS((CLAMAVC * clamp, uint32_t opt,
+   const void * valp));
+
+// shuts down the server
+OTADM_F(int32_t) clamavc_shutdown PARAMS((CLAMAVC * clamp));
+
+//OTADM_F(int32_t) clamavc_stats PARAMS((CLAMAVC * clamp));
+
+// returns daemon's version
+OTADM_F(char *) clamavc_version PARAMS((CLAMAVC * clamp));
 
 END_C_DECLS
 #endif /* end of header */

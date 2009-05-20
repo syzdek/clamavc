@@ -40,5 +40,14 @@
 #      libtool --mode=clean rm -f libclamavc.la libclamavc.lo
 #
 clamavc_close
+clamavc_free
 clamavc_initialize
+clamavc_instream
+clamavc_ping
+clamavc_rawscan
+clamavc_reload
+clamavc_scan
+clamavc_set_opt
+clamavc_shutdown
+clamavc_version
 # end of symbol export file
