@@ -148,7 +148,7 @@ int32_t clamavc_connect(CLAMAVC * clamp)
          sa6.sin6_len    = sizeof(struct sockaddr_in6);
 
          if ((s = socket(AF_INET6, SOCK_STREAM, 0)) < 0)
-            return(errno);
+            return(-1);
 
          opt = 1;
          setsockopt(s, SOL_SOCKET, SO_REUSEADDR, (void *)&opt, sizeof(int));
@@ -169,7 +169,7 @@ int32_t clamavc_connect(CLAMAVC * clamp)
             if (clamp->verbose > 1)
                printf(">>> zIDSESSION\n");
             if ((write(s, "zIDSESSION", 11)) == -1)
-               return(errno);
+               return(-1);
             clamp->s = s;
             return(0);
          };
@@ -191,7 +191,7 @@ int32_t clamavc_connect(CLAMAVC * clamp)
          sa.sin_len    = sizeof(struct sockaddr_in6);
 
          if ((s = socket(AF_INET, SOCK_STREAM, 0)) < 0)
-            return(errno);
+            return(-1);
 
          opt = 1;
          setsockopt(s, SOL_SOCKET, SO_REUSEADDR, (void *)&opt, sizeof(int));
@@ -212,7 +212,7 @@ int32_t clamavc_connect(CLAMAVC * clamp)
             if (clamp->verbose > 1)
                printf(">>> zIDSESSION\n");
             if ((write(s, "zIDSESSION", 11)) == -1)
-               return(errno);
+               return(-1);
             clamp->s = s;
             return(0);
          };
@@ -223,7 +223,7 @@ int32_t clamavc_connect(CLAMAVC * clamp)
          close(s);
       };
 
-   return(errno);
+   return(-1);
 }
 
 
@@ -279,7 +279,7 @@ int32_t clamavc_ping(CLAMAVC * clamp)
    ssize_t len;
 
    if (clamavc_connect(clamp))
-      return(errno);
+      return(-1);
 
    if (clamp->verbose > 1)
       printf(">>> zPING\n");
@@ -287,13 +287,13 @@ int32_t clamavc_ping(CLAMAVC * clamp)
    if ((len = write(clamp->s, "zPING", 6)) == -1)
    {
       clamavc_disconnect(clamp);
-      return(errno);
+      return(-1);
    };
 
    if ((len = clamavc_read(clamp, buff, 1023)) == -1)
    {
       clamavc_disconnect(clamp);
-      return(errno);
+      return(-1);
    };
 
    buff[len] = '\0';
