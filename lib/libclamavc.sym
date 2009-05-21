@@ -44,6 +44,7 @@ clamavc_contscan
 clamavc_free
 clamavc_initialize
 clamavc_instream
+clamavc_multiscan
 clamavc_ping
 clamavc_rawscan
 clamavc_reload

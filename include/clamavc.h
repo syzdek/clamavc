@@ -165,7 +165,9 @@ CLAMAVC_F(CLAMAVC *) clamavc_initialize PARAMS((void));
 CLAMAVC_F(int32_t) clamavc_instream PARAMS((CLAMAVC * clamp, uint8_t * src,
    uint32_t len));
 
-//OTADM_F(int32_t) clamavc_multiscan PARAMS((CLAMAVC * clamp));
+// recursively scans a directory using multiple threads
+CLAMAVC_F(int32_t) clamavc_multiscan PARAMS((CLAMAVC * clamp,
+   const char * path));
 
 // checks the daemon's state
 CLAMAVC_F(int32_t) clamavc_ping PARAMS((CLAMAVC * clamp));
