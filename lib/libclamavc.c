@@ -486,6 +486,41 @@ int32_t clamavc_set_opt(CLAMAVC * clamp, uint32_t opt, const void * valp)
 }
 
 
+/// shuts down the server
+/// @param[in]  clamp    pointer to ClamAV Client session data
+int32_t clamavc_shutdown(CLAMAVC * clamp)
+{
+   char    buff[1024];
+   ssize_t len;
+
+   if (clamavc_connect(clamp, 0))
+      return(-1);
+
+   if (clamp->verbose > 1)
+      printf(">>> zSHUTDOWN\n");
+
+   if ((len = write(clamp->s, "zSHUTDOWN", 10)) == -1)
+   {
+      clamavc_disconnect(clamp);
+      return(-1);
+   };
+
+   if ((len = read(clamp->s, buff, 1023)) == -1)
+   {
+      clamavc_disconnect(clamp);
+      return(-1);
+   };
+
+   buff[len] = '\0';
+   if (clamp->verbose > 1)
+      printf("<<< %s\n", buff);
+
+   clamavc_disconnect(clamp);
+
+   return(0);
+}
+
+
 /// returns daemon's version
 /// @param[in]  clamp    pointer to ClamAV Client session data
 const char * clamavc_version(CLAMAVC * clamp)
