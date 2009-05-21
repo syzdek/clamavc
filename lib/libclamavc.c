@@ -239,6 +239,60 @@ int32_t clamavc_connect(CLAMAVC * clamp, int idsess)
 }
 
 
+/// recursively scans a directory without stopping if a virus is found
+/// @param[in]  clamp    pointer to ClamAV Client session data
+/// @param[in]  path     directory path to scan
+int32_t clamavc_contscan(CLAMAVC * clamp, const char * path)
+{
+   char    buff[1024];
+   ssize_t len;
+   ssize_t offset;
+
+   if (clamavc_connect(clamp, 0))
+      return(-1);
+
+   if ((len = snprintf(buff, 1024, "zCONTSCAN %s", path)) > 1024)
+   {
+      errno = ENOBUFS;
+      return(-1);
+   };
+
+   if (clamp->verbose > 1)
+      printf(">>> %s\n", buff);
+
+   if ((len = write(clamp->s, buff, len+1)) == -1)
+   {
+      clamavc_disconnect(clamp);
+      return(-1);
+   };
+
+   if ((len = read(clamp->s, buff, 1023)) == -1)
+   {
+      clamavc_disconnect(clamp);
+      return(-1);
+   };
+   buff[len] = '\0';
+   if (clamp->verbose > 1)
+      printf("<<< %s\n", buff);
+
+   for(offset = 0; ( (buff[offset]) && (buff[offset] != ':') ); offset++);
+   if (!(buff[offset]))
+   {
+      errno = EPROTO;
+      return(-1);
+   };
+   offset++;
+
+   if (clamp->verbose > 1)
+      printf("<== %s\n", &buff[offset]);
+
+   if (!(strcmp(&buff[offset], "OK")))
+      return(0);
+
+   return(1);
+}
+
+
 /// disconnects from remote ClamAV daemon
 /// @param[in]  clamp    pointer to ClamAV Client session data
 void clamavc_disconnect(CLAMAVC * clamp)

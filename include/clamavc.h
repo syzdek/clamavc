@@ -152,12 +152,8 @@ BEGIN_C_DECLS
 CLAMAVC_F(void) clamavc_close PARAMS((CLAMAVC * clamp));
 
 // recursively scans a directory without stopping if a virus is found
-//CLAMAVC_F(int32_t) clamavc_contscan PARAMS((CLAMAVC * clamp,
-// const char * dir));
-
-// recursively scans a directory without stopping if a virus is found
-//CLAMAVC_F(int32_t) clamavc_contscan_s PARAMS((CLAMAVC * clamp,
-// const char * dir));
+CLAMAVC_F(int32_t) clamavc_contscan PARAMS((CLAMAVC * clamp,
+   const char * dir));
 
 // frees memory allocated by library
 CLAMAVC_F(char *) clamavc_free PARAMS((CLAMAVC * clamp, void * ptr));
@@ -173,9 +169,6 @@ CLAMAVC_F(int32_t) clamavc_instream PARAMS((CLAMAVC * clamp, uint8_t * src,
 
 // checks the daemon's state
 CLAMAVC_F(int32_t) clamavc_ping PARAMS((CLAMAVC * clamp));
-
-// scans a file or directory without archive support enabled
-CLAMAVC_F(int32_t) clamavc_rawscan PARAMS((CLAMAVC * clamp, const char * path));
 
 // reloads the daemon's databases
 CLAMAVC_F(int32_t) clamavc_reload PARAMS((CLAMAVC * clamp));
