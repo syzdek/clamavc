@@ -349,11 +349,11 @@ CLAMAVC * clamavc_initialize(void)
 /// recursively scans a directory using multiple threads
 /// @param[in]  clamp    pointer to ClamAV Client session data
 /// @param[in]  path     directory path to scan
-int32_t clamavc_instream(CLAMAVC * clamp, const uint8_t * src, int32_t len)
+int32_t clamavc_instream(CLAMAVC * clamp, const char * src, int32_t nbyte)
 {
    char    buff[1024];
-   int32_t nbo; //network byte order
    int32_t offset;
+   int32_t len;
 
    if (clamavc_connect(clamp, 0))
    {
@@ -365,7 +365,7 @@ int32_t clamavc_instream(CLAMAVC * clamp, const uint8_t * src, int32_t len)
    {
       if (clamp->verbose > 1)
          printf(">>> zINSTREAM\n");
-      if ((len = write(clamp->s, "zINSTREAM", 9)) == -1)
+      if ((len = write(clamp->s, "zINSTREAM", 10)) == -1)
       {
          clamavc_disconnect(clamp);
          return(-1);
@@ -373,15 +373,19 @@ int32_t clamavc_instream(CLAMAVC * clamp, const uint8_t * src, int32_t len)
    };
    clamp->instream = 1;
 
-   nbo = htonl(len);
-   if ((len = write(clamp->s, &nbo, sizeof(nbo))) == -1)
+   if (clamp->verbose > 1)
+         printf("==> +++data+++\n");
+
+   len = htonl(nbyte);
+   if ((len = write(clamp->s, &len, sizeof(len))) == -1)
    {
       clamavc_disconnect(clamp);
       return(-1);
    };
-   if (len)
+
+   if (nbyte)
    {
-      if ((len = write(clamp->s, src, len)) == -1)
+      if ((len = write(clamp->s, src, nbyte)) == -1)
       {
          clamavc_disconnect(clamp);
          return(-1);
@@ -389,7 +393,7 @@ int32_t clamavc_instream(CLAMAVC * clamp, const uint8_t * src, int32_t len)
       return(0);
    };
    
-   if (!(len))
+   if (!(nbyte))
    {
       clamp->instream = 0;
       if ((len = read(clamp->s, buff, 1023)) == -1)
@@ -402,6 +406,7 @@ int32_t clamavc_instream(CLAMAVC * clamp, const uint8_t * src, int32_t len)
          printf("<<< %s\n", buff);
 
       for(offset = 0; ( (buff[offset]) && (buff[offset] != ':') ); offset++);
+
       if (!(buff[offset]))
       {
          clamavc_disconnect(clamp);

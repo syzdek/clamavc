@@ -162,7 +162,7 @@ CLAMAVC_F(char *) clamavc_free PARAMS((CLAMAVC * clamp, void * ptr));
 CLAMAVC_F(CLAMAVC *) clamavc_initialize PARAMS((void));
 
 // sends chuncked data to the server
-CLAMAVC_F(int32_t) clamavc_instream PARAMS((CLAMAVC * clamp, const uint8_t * src,
+CLAMAVC_F(int32_t) clamavc_instream PARAMS((CLAMAVC * clamp, const char * src,
    int32_t len));
 
 // recursively scans a directory using multiple threads
