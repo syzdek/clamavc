@@ -109,10 +109,12 @@ void version PARAMS((void));
 int main (int argc, char * argv[])
 {
    int32_t        c;
+   int32_t        err;
    int32_t        verbose;
    int32_t        option_index;
    uintmax_t      uval;
    CLAMAVC      * clamp;
+   const char   * str;
 
    static char   short_options[] =  "h:Hp:s:S:vV";
    static struct option long_options[] =
@@ -198,7 +200,32 @@ int main (int argc, char * argv[])
       };
    };
 
-   clamavc_ping(clamp);
+   if (verbose)
+   {
+      if (!(str = clamavc_version(clamp)))
+      {
+         perror("clamavc_version()");
+         clamavc_close(clamp);
+         return(1);
+      };
+      printf("%s\n", str);
+   };
+
+   if (clamavc_ping(clamp))
+      perror("clamavc_ping()");
+
+   if ((err = clamavc_instream(clamp, "/tmp/test/", 10)) == -1)
+      perror("clamavc_instream()");
+   if ((err = clamavc_instream(clamp, "/tmp/test/", 10)) == -1)
+      perror("clamavc_instream()");
+   //if ((err = clamavc_instream(clamp, "/tmp/test/", 10)) == -1)
+   //   perror("clamavc_instream()");
+   if ((err = clamavc_instream(clamp, NULL, 0)) == -1)
+      perror("clamavc_instream()");
+   //if (err)
+   //   printf("infected\n");
+   //else
+   //   printf("not infected\n");
 
    clamavc_close(clamp);
 
