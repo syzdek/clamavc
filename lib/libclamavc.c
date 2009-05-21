@@ -68,6 +68,7 @@ struct clamavc
    int         port;         ///< TCP port accepting connections for the ClamAV daemon
    int         streamMaxLen; ///< max chunck size to send to clamd 
    int         verbose;      ///< toggle verbose mode
+   int         idsess;       ///< IDSESSION state
    char      * host;         ///< network host running the ClamAV daemon
    char      * socket;       ///< unix domain socket for connections to the ClamAV daemon
    char        version[CLAMAVC_VER_LEN];
@@ -80,7 +81,7 @@ struct clamavc
 //////////////////
 
 // connects to remote ClamAV daemon
-int32_t clamavc_connect PARAMS((CLAMAVC * clamp));
+int32_t clamavc_connect PARAMS((CLAMAVC * clamp, int idsess));
 
 // disconnects from remote ClamAV daemon
 void clamavc_disconnect PARAMS((CLAMAVC * clamp));
@@ -117,7 +118,7 @@ void clamavc_close(CLAMAVC * clamp)
 
 /// connects to remote ClamAV daemon
 /// @param[in]  clamp    pointer to ClamAV Client session data
-int32_t clamavc_connect(CLAMAVC * clamp)
+int32_t clamavc_connect(CLAMAVC * clamp, int idsess)
 {
    int                   i;
    int                   s;
@@ -131,6 +132,9 @@ int32_t clamavc_connect(CLAMAVC * clamp)
 
    if (!(clamp))
       return(errno = EINVAL);
+
+   if (clamp->idsess != idsess)
+      clamavc_disconnect(clamp);
 
    if (clamp->s != -1)
       return(0);
@@ -166,10 +170,14 @@ int32_t clamavc_connect(CLAMAVC * clamp)
             if (clamp->verbose)
                printf("Connected to %s.\n", clamp->host);
             //fcntl(s, F_SETFL, O_NONBLOCK);
-            if (clamp->verbose > 1)
-               printf(">>> zIDSESSION\n");
-            if ((write(s, "zIDSESSION", 11)) == -1)
-               return(-1);
+            if (idsess)
+            {
+               if (clamp->verbose > 1)
+                  printf(">>> zIDSESSION\n");
+               if ((write(s, "zIDSESSION", 11)) == -1)
+                  return(-1);
+            };
+            clamp->idsess = idsess;
             clamp->s = s;
             return(0);
          };
@@ -209,10 +217,14 @@ int32_t clamavc_connect(CLAMAVC * clamp)
             if (clamp->verbose)
                printf("Connected to %s.\n", clamp->host);
             //fcntl(s, F_SETFL, O_NONBLOCK);
-            if (clamp->verbose > 1)
-               printf(">>> zIDSESSION\n");
-            if ((write(s, "zIDSESSION", 11)) == -1)
-               return(-1);
+            if (idsess)
+            {
+               if (clamp->verbose > 1)
+                  printf(">>> zIDSESSION\n");
+               if ((write(s, "zIDSESSION", 11)) == -1)
+                  return(-1);
+            };
+            clamp->idsess = idsess;
             clamp->s = s;
             return(0);
          };
@@ -235,9 +247,13 @@ void clamavc_disconnect(CLAMAVC * clamp)
       return;
    if (clamp->s == -1)
       return;
-   if (clamp->verbose > 1)
-      printf(">>> zEND\n");
-   write(clamp->s, "zEND", 5);
+   if (clamp->idsess)
+   {
+      if (clamp->verbose > 1)
+         printf(">>> zEND\n");
+      write(clamp->s, "zEND", 5);
+   };
+   clamp->idsess = 0;
    close(clamp->s);
    clamp->s = -1;
    return;
@@ -278,7 +294,7 @@ int32_t clamavc_ping(CLAMAVC * clamp)
    char    buff[1024];
    ssize_t len;
 
-   if (clamavc_connect(clamp))
+   if (clamavc_connect(clamp, 1))
       return(-1);
 
    if (clamp->verbose > 1)
@@ -368,6 +384,47 @@ int32_t clamavc_read(CLAMAVC * clamp, char * dst, ssize_t len)
 }
 
 
+/// reloads the daemon's databases
+/// @param[in]  clamp    pointer to ClamAV Client session data
+int32_t clamavc_reload(CLAMAVC * clamp)
+{
+   char    buff[1024];
+   ssize_t len;
+
+   if (clamavc_connect(clamp, 0))
+      return(-1);
+
+   if (clamp->verbose > 1)
+      printf(">>> zRELOAD\n");
+
+   if ((len = write(clamp->s, "zRELOAD", 8)) == -1)
+   {
+      clamavc_disconnect(clamp);
+      return(-1);
+   };
+
+   if ((len = read(clamp->s, buff, 1023)) == -1)
+   {
+      clamavc_disconnect(clamp);
+      return(-1);
+   };
+
+   buff[len] = '\0';
+   if (clamp->verbose > 1)
+      printf("<<< %s\n", buff);
+
+   if ((strcmp(buff, "RELOADING")))
+   {
+      errno = EPROTO;
+      return(-1);
+   };
+
+   clamavc_disconnect(clamp);
+
+   return(0);
+}
+
+
 /// sets library options
 /// @param[in]  clamp    pointer to ClamAV Client session data
 /// @param[in]  opt      numeric ID of option to set
@@ -435,7 +492,7 @@ const char * clamavc_version(CLAMAVC * clamp)
 {
    ssize_t len;
 
-   if (clamavc_connect(clamp))
+   if (clamavc_connect(clamp, 1))
       return(NULL);
 
    if (clamp->verbose > 1)
