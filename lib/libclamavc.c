@@ -300,6 +300,12 @@ int32_t clamavc_ping(CLAMAVC * clamp)
    if (clamp->verbose > 1)
       printf("<<< %s\n", buff);
 
+   if ((strcmp(buff, "PONG")))
+   {
+      errno = EPROTO;
+      return(-1);
+   };
+
    return(0);
 }
 
@@ -312,6 +318,7 @@ int32_t clamavc_read(CLAMAVC * clamp, char * dst, ssize_t len)
 {
    ssize_t pos;
    ssize_t added;
+   ssize_t offset;
 
    if (!(clamp))
    {
@@ -342,8 +349,22 @@ int32_t clamavc_read(CLAMAVC * clamp, char * dst, ssize_t len)
          return(-1);
       };
    };
+   len = pos;
 
-   return(pos);
+   for(offset = 0; (dst[offset] && (dst[offset] != ' ')); offset++);
+   if (!(dst[offset]))
+   {
+      errno = EPROTO;
+      return(-1);
+   };
+   offset++;
+
+   for(pos = offset; pos < len; pos++)
+      dst[pos-offset] = dst[pos];
+
+   len -= offset;
+
+   return(len);
 }
 
 
