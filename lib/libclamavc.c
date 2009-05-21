@@ -69,6 +69,7 @@ struct clamavc
    int         streamMaxLen; ///< max chunck size to send to clamd 
    int         verbose;      ///< toggle verbose mode
    int         idsess;       ///< IDSESSION state
+   int         instream;     ///< in stream state
    char      * host;         ///< network host running the ClamAV daemon
    char      * socket;       ///< unix domain socket for connections to the ClamAV daemon
    char        version[CLAMAVC_VER_LEN];
@@ -132,6 +133,9 @@ int32_t clamavc_connect(CLAMAVC * clamp, int idsess)
 
    if (!(clamp))
       return(errno = EINVAL);
+
+   if (clamp->instream)
+      return(0);
 
    if (clamp->idsess != idsess)
       clamavc_disconnect(clamp);
@@ -307,7 +311,8 @@ void clamavc_disconnect(CLAMAVC * clamp)
          printf(">>> zEND\n");
       write(clamp->s, "zEND", 5);
    };
-   clamp->idsess = 0;
+   clamp->idsess   = 0;
+   clamp->instream = 0;
    close(clamp->s);
    clamp->s = -1;
    return;
@@ -344,6 +349,84 @@ CLAMAVC * clamavc_initialize(void)
 /// recursively scans a directory using multiple threads
 /// @param[in]  clamp    pointer to ClamAV Client session data
 /// @param[in]  path     directory path to scan
+int32_t clamavc_instream(CLAMAVC * clamp, const uint8_t * src, int32_t len)
+{
+   char    buff[1024];
+   int32_t nbo; //network byte order
+   int32_t offset;
+
+   if (clamavc_connect(clamp, 0))
+   {
+      clamp->instream = 0;
+      return(-1);
+   };
+
+   if (!(clamp->instream))
+   {
+      if (clamp->verbose > 1)
+         printf(">>> zINSTREAM\n");
+      if ((len = write(clamp->s, "zINSTREAM", 9)) == -1)
+      {
+         clamavc_disconnect(clamp);
+         return(-1);
+      };
+   };
+   clamp->instream = 1;
+
+   nbo = htonl(len);
+   if ((len = write(clamp->s, &nbo, sizeof(nbo))) == -1)
+   {
+      clamavc_disconnect(clamp);
+      return(-1);
+   };
+   if (len)
+   {
+      if ((len = write(clamp->s, src, len)) == -1)
+      {
+         clamavc_disconnect(clamp);
+         return(-1);
+      };
+      return(0);
+   };
+   
+   if (!(len))
+   {
+      clamp->instream = 0;
+      if ((len = read(clamp->s, buff, 1023)) == -1)
+      {
+         clamavc_disconnect(clamp);
+         return(-1);
+      };
+      buff[len] = '\0';
+      if (clamp->verbose > 1)
+         printf("<<< %s\n", buff);
+
+      for(offset = 0; ( (buff[offset]) && (buff[offset] != ':') ); offset++);
+      if (!(buff[offset]))
+      {
+         clamavc_disconnect(clamp);
+         errno = EPROTO;
+         return(-1);
+      };
+      offset++;
+
+      if (clamp->verbose > 1)
+         printf("<== %s\n", &buff[offset]);
+
+      if (!(strcmp(&buff[offset], "OK")))
+      {
+         clamavc_disconnect(clamp);
+         return(0);
+      };
+   };
+
+   return(1);
+}
+
+
+/// recursively scans a directory using multiple threads
+/// @param[in]  clamp    pointer to ClamAV Client session data
+/// @param[in]  path     directory path to scan
 int32_t clamavc_multiscan(CLAMAVC * clamp, const char * path)
 {
    char    buff[1024];
@@ -355,6 +438,7 @@ int32_t clamavc_multiscan(CLAMAVC * clamp, const char * path)
 
    if ((len = snprintf(buff, 1024, "zMULTISCAN %s", path)) > 1024)
    {
+      clamavc_disconnect(clamp);
       errno = ENOBUFS;
       return(-1);
    };
@@ -380,6 +464,7 @@ int32_t clamavc_multiscan(CLAMAVC * clamp, const char * path)
    for(offset = 0; ( (buff[offset]) && (buff[offset] != ':') ); offset++);
    if (!(buff[offset]))
    {
+      clamavc_disconnect(clamp);
       errno = EPROTO;
       return(-1);
    };
@@ -389,7 +474,10 @@ int32_t clamavc_multiscan(CLAMAVC * clamp, const char * path)
       printf("<== %s\n", &buff[offset]);
 
    if (!(strcmp(&buff[offset], "OK")))
+   {
+      clamavc_disconnect(clamp);
       return(0);
+   };
 
    return(1);
 }
@@ -523,6 +611,7 @@ int32_t clamavc_reload(CLAMAVC * clamp)
 
    if ((strcmp(buff, "RELOADING")))
    {
+      clamavc_disconnect(clamp);
       errno = EPROTO;
       return(-1);
    };
