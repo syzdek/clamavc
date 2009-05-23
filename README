@@ -1,6 +1,73 @@
-ClamAV Client is a simple network client library for clamd.
 
-TODO List:
+Clam Antivirus Client Library
+Copyright (C) 2009 Alaska Communications Systems Group, Inc
+
+@ACS_LICENSE_HEADER_START@
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along
+with this program; if not, write to the Free Software Foundation, Inc.,
+51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
+@ACS_LICENSE_HEADER_END@
+
+
+Contents
+========
+
+  I. About
+ II. Obtaining source code
+III. TODO list
+ IV. Submitting patches
+  V. Additional resources
+
+
+I. About
+--------
+
+Clam AntiVirus Client Library provides a simple API to the ClamAV daemon.
+ClamAVC does not require ClamAV to be installed. ClamAVC communicates with
+clamd using clamd's documented protocol using either TCP or a local Unix
+domain socket.
+
+
+II. Obtaining source code
+-------------------------
+
+Downloading source code from Git requires the following software:
+
+ * Git >= 1.6.0
+ * GNU Autoconf >= 2.61
+ * GNU Automake >= 1.10
+ * GNU Libtool >= 1.5.6
+ * GNU Make >= 3.80
+
+Downloading source code:
+
+ $ git clone git://github.com/syzdek/clamavc.git
+
+Preparing the source for compiling:
+
+ $ cd clamavc
+ $ libtoolize -c
+ $ aclocal
+ $ autoheader
+ $ autoconf
+ $ automake -c -a
+
+
+III. TODO list
+--------------
+
  * Test code against clamd with fake virus in order to verify correct
    error reporting by the library.
  * review and clean up the code.
@@ -11,3 +78,29 @@ TODO List:
  * let bake in production setting
  * create release package.
  * submit to ClamAV as contribware.
+
+
+IV. Submitting patches
+----------------------
+
+To be written.
+
+
+V. Additional resources
+-----------------------
+
+ClamAV Client Library source code:
+   http://github.com/syzdek/clamavc/tree
+
+ClamAV:
+   http://www.clamav.net/
+
+Clamd documentation:
+   http://www.clamav.net/doc/latest/html/node26.html
+
+
+--
+Clam Antivirus Client Library
+Copyright (C) 2009 Alaska Communications Systems Group, Inc
+
+Written by David M. Syzdek <david.syzdek@acsalaska.net>.
