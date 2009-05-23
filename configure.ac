@@ -82,10 +82,6 @@ AC_PROG_LIBTOOL
 AC_CLAMAVC_OPTION_DEBUG
 AC_CLAMAVC_OPTION_WARNINGS
 
-# library checks
-AC_CHECK_HEADERS([getopt.h]                            ,,[AC_MSG_ERROR([missing GNU getopt.h])])
-AC_SEARCH_LIBS(getopt_long,            getopt gnugetopt,,[AC_MSG_ERROR([missing libgnugetopt.la])])
-
 # Creates outputs
 AC_CONFIG_FILES([Makefile])
 AC_OUTPUT
