@@ -97,7 +97,7 @@ int config(int argc, char * argv[], CLAMAVC ** clampp, const char ** filep)
 
          case 's':
             uval = strtoul(optarg, NULL, 0);
-            clamavc_set_opt(clamp, CLAMAVC_STREAMMAXLEN, &uval);
+            clamavc_set_opt(clamp, CLAMAVC_OSTREAMMAXLEN, &uval);
             break;
 
          case 'v':
