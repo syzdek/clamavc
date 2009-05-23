@@ -87,6 +87,9 @@ int32_t clamavc_connect PARAMS((CLAMAVC * clamp, int idsess));
 // disconnects from remote ClamAV daemon
 void clamavc_disconnect PARAMS((CLAMAVC * clamp));
 
+// converts from host byte order to network byte order
+uint32_t clamavc_hton PARAMS((uint32_t host, size_t width));
+
 // reads a data stream from the ClamAV daemon
 int32_t clamavc_read PARAMS((CLAMAVC * clamp, char * dst, ssize_t len));
 
@@ -143,7 +146,7 @@ int32_t clamavc_connect(CLAMAVC * clamp, int idsess)
    if (clamp->s != -1)
       return(0);
 
-   port = ntohs(clamp->port & 0xFFFF);
+   port = clamavc_hton(clamp->port, 2);
 
    // attempts IPv6 connection
    if ((hp = gethostbyname2(clamp->host, AF_INET6)))
@@ -319,6 +322,43 @@ void clamavc_disconnect(CLAMAVC * clamp)
 }
 
 
+// converts from host byte order to network byte order
+/// @param[in]  host     value to convert
+/// @param[in]  width    byte width of value
+uint32_t clamavc_hton(uint32_t host, size_t width)
+{
+   uint32_t mask;
+   uint32_t num;
+
+   mask = 0xFF;
+   switch(width)
+   {
+      case 4:
+         mask |= 0xFFFF0000;
+      case 2:
+         mask |= 0xFF00;
+      default:
+         host &= mask;
+   };
+
+   num = 1;
+   if ( (*(uint8_t *)&num) != 1 )
+      return(host);
+
+   switch(width)
+   {
+      case 4:
+         host = ((host << 16) & 0xFFFF0000) | ((host >> 16) & 0x0000FFFF);
+      case 2:
+         host = ((host <<  8) & 0xFF00FF00) | ((host >>  8) & 0x00FF00FF);
+      default:
+         break;
+   };
+
+   return(host);
+}
+
+
 /// initialize ClamAV client library session
 CLAMAVC * clamavc_initialize(void)
 {
@@ -376,7 +416,7 @@ int32_t clamavc_instream(CLAMAVC * clamp, const char * src, int32_t nbyte)
    if (clamp->verbose > 1)
          printf("==> +++data+++\n");
 
-   len = htonl(nbyte);
+   len = clamavc_hton(nbyte, 4);
    if ((len = write(clamp->s, &len, sizeof(len))) == -1)
    {
       clamavc_disconnect(clamp);
