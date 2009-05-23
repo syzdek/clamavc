@@ -87,6 +87,10 @@
 //              //
 //////////////////
 
+// processed command line options
+int config PARAMS((int argc, char * argv[], CLAMAVC ** clampp,
+   const char ** filep));
+
 // prints program usage and exits
 void usage PARAMS((void));
 

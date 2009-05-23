@@ -60,22 +60,9 @@ int main PARAMS((int argc, char * argv[]));
 /// @param[in]  argv     array of arguments passed to clamavclient
 int main (int argc, char * argv[])
 {
-   int32_t        c;
    int32_t        err;
-   int32_t        verbose;
-   int32_t        option_index;
-   uintmax_t      uval;
    CLAMAVC      * clamp;
-   const char   * str;
-
-   static char   short_options[] =  "h:Hp:s:S:vV";
-   static struct option long_options[] =
-   {
-      {"help",          no_argument, 0, 'H'},
-      {"verbose",       no_argument, 0, 'v'},
-      {"version",       no_argument, 0, 'V'},
-      {NULL,            0,           0, 0  }
-   };
+   const char   * file;
 
 #ifdef HAVE_GETTEXT
    setlocale (LC_ALL, "");
@@ -83,85 +70,10 @@ int main (int argc, char * argv[])
    textdomain (PACKAGE);
 #endif
 
-   option_index = 0;
-   verbose      = 0;
-
-   if (!(clamp = clamavc_initialize()))
-   {
-      perror(PROGRAM_NAME ": clamavc_initialize()");
+   if (config(argc, argv, &clamp, &file))
       return(1);
-   };
-
-   while((c = getopt_long(argc, argv, short_options, long_options, &option_index)) != -1)
-   {
-      switch(c)
-      {
-         case -1:    // no more arguments
-         case 0:     // long options toggles
-            break;
-
-         case 'h':
-            if (clamavc_set_opt(clamp, CLAMAVC_OHOST, optarg))
-            {
-               perror(PROGRAM_NAME ": clamavc_set_opt()");
-               clamavc_close(clamp);
-               return(1);
-            };
-            break;
-
-         case 'H':
-            usage();
-            return(0);
-
-         case 'p':
-            uval = strtoumax(optarg, NULL, 0);
-            clamavc_set_opt(clamp, CLAMAVC_OPORT, &uval);
-            break;
-
-         case 's':
-            if (clamavc_set_opt(clamp, CLAMAVC_OSOCKET, optarg))
-            {
-               perror(PROGRAM_NAME ": clamavc_set_opt()");
-               clamavc_close(clamp);
-               return(1);
-            };
-            break;
-
-         case 'S':
-            uval = strtoumax(optarg, NULL, 0);
-            clamavc_set_opt(clamp, CLAMAVC_STREAMMAXLEN, &uval);
-            break;
-
-         case 'v':
-            verbose++;
-            clamavc_set_opt(clamp, CLAMAVC_OVERBOSE, &verbose);
-            break;
-
-         case 'V':
-            version();
-            return(0);
-
-         case '?':   // argument error
-            fprintf(stderr, _("Try `%s --help' for more information.\n"), PROGRAM_NAME);
-            return(1);
-
-         default:
-            fprintf(stderr, _("%s: unrecognized option `--%c'\n"), PROGRAM_NAME, c);
-            fprintf(stderr, _("Try `%s --help' for more information.\n"), PROGRAM_NAME);
-            return(1);
-      };
-   };
-
-   if (verbose)
-   {
-      if (!(str = clamavc_version(clamp)))
-      {
-         perror("clamavc_version()");
-         clamavc_close(clamp);
-         return(1);
-      };
-      printf("%s\n", str);
-   };
+   if (!(clamp))
+      return(0);
 
    if (clamavc_ping(clamp))
       perror("clamavc_ping()");

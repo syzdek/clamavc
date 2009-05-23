@@ -32,6 +32,119 @@
 //             //
 /////////////////
 
+/// processed command line options
+/// @param[in]  argc     number of arguments passed to clamavclient
+/// @param[in]  argv     array of arguments passed to clamavclient
+/// @param[out] clampp   pointer to ClamAV Client session data
+/// @param[out] filep    pointer to file pointer
+int config(int argc, char * argv[], CLAMAVC ** clampp, const char ** filep)
+{
+   CLAMAVC      * clamp;
+   int32_t        c;
+   int32_t        option_index;
+   int32_t        verbose;
+   uintmax_t      uval;
+   const char   * str;
+
+   static char   short_options[] =  "h:Hp:s:vV";
+   static struct option long_options[] =
+   {
+      {"help",          no_argument, 0, 'H'},
+      {"verbose",       no_argument, 0, 'v'},
+      {"version",       no_argument, 0, 'V'},
+      {NULL,            0,           0, 0  }
+   };
+
+   option_index = 0;
+   verbose      = 0;
+   *filep       = NULL;
+   *clampp      = NULL;
+
+   if (!(clamp = clamavc_initialize()))
+   {
+      perror(PROGRAM_NAME ": clamavc_initialize()");
+      return(-1);
+   };
+
+   while((c = getopt_long(argc, argv, short_options, long_options, &option_index)) != -1)
+   {
+      switch(c)
+      {
+         case -1:    // no more arguments
+         case 0:     // long options toggles
+            break;
+
+         case 'h':
+            if (clamavc_set_opt(clamp, CLAMAVC_OHOST, optarg))
+            {
+               perror(PROGRAM_NAME ": clamavc_set_opt()");
+               clamavc_close(clamp);
+               return(-1);
+            };
+            break;
+
+         case 'H':
+            usage();
+            clamavc_close(clamp);
+            return(0);
+
+         case 'p':
+            uval = strtoumax(optarg, NULL, 0);
+            clamavc_set_opt(clamp, CLAMAVC_OPORT, &uval);
+            break;
+
+         case 's':
+            uval = strtoumax(optarg, NULL, 0);
+            clamavc_set_opt(clamp, CLAMAVC_STREAMMAXLEN, &uval);
+            break;
+
+         case 'v':
+            verbose++;
+            clamavc_set_opt(clamp, CLAMAVC_OVERBOSE, &verbose);
+            break;
+
+         case 'V':
+            version();
+            clamavc_close(clamp);
+            return(0);
+
+         case '?':   // argument error
+            fprintf(stderr, _("Try `%s --help' for more information.\n"), PROGRAM_NAME);
+            return(-1);
+
+         default:
+            fprintf(stderr, _("%s: unrecognized option `--%c'\n"), PROGRAM_NAME, c);
+            fprintf(stderr, _("Try `%s --help' for more information.\n"), PROGRAM_NAME);
+            return(-1);
+      };
+   };
+
+   if ((optind+1) != argc)
+   {
+      fprintf(stderr, _("%s: missing required argument\n"), PROGRAM_NAME);
+      fprintf(stderr, _("Try `%s --help' for more information.\n"), PROGRAM_NAME);
+      clamavc_close(clamp);
+      return(-1);
+   };
+
+   if (verbose)
+   {
+      if (!(str = clamavc_version(clamp)))
+      {
+         perror("clamavc_version()");
+         clamavc_close(clamp);
+         return(1);
+      };
+      printf("%s\n", str);
+   };
+
+   *filep  = argv[optind];
+   *clampp = clamp;
+
+   return(0);
+}
+
+
 /// prints program usage and exits
 void usage(void)
 {
