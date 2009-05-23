@@ -21,7 +21,7 @@
  *  @ACS_LICENSE_HEADER_END@
  */
 /**
- *  @file src/clamavc.c simple client using libclamavc.la
+ *  @file examples/clamavc.c simple client using libclamavc.la
  */
 #define _CLAMAVC_SRC_CLAMAVC_C 1
 
