@@ -23,14 +23,8 @@
 #   configure.in - automate compiling on a unix platform
 #
 
-# +-=-=-=-=-=-=-=-=-+
-# |                 |
-# |  Autoconf Init  |
-# |                 |
-# +-=-=-=-=-=-=-=-=-+
-
+# Autoconf Init
 AC_PREREQ(2.61)
-
 AC_COPYRIGHT([Copyright (C) 2009 Alaska Communications Systems Group, Inc.])
 AC_REVISION(0.1)
 AC_INIT([Clam Antivirus Client Library],[0.1],[ip.eng@acsalaska.net],[clamavc])
@@ -84,6 +78,10 @@ AC_DISABLE_FAST_INSTALL
 AC_LIBTOOL_WIN32_DLL
 AC_PROG_LIBTOOL
 
+# configure options
+AC_CLAMAVC_OPTION_DEBUG
+AC_CLAMAVC_OPTION_WARNINGS
+
 # library checks
 AC_CHECK_HEADERS([getopt.h]                            ,,[AC_MSG_ERROR([missing GNU getopt.h])])
 AC_SEARCH_LIBS(getopt_long,            getopt gnugetopt,,[AC_MSG_ERROR([missing libgnugetopt.la])])
@@ -91,5 +89,16 @@ AC_SEARCH_LIBS(getopt_long,            getopt gnugetopt,,[AC_MSG_ERROR([missing 
 # Creates outputs
 AC_CONFIG_FILES([Makefile])
 AC_OUTPUT
+
+#  Show Local Conf
+AC_MSG_NOTICE([ ])
+AC_MSG_NOTICE([   Clam Antivirus Client Library ${PACKAGE_VERSION}])
+AC_MSG_NOTICE([ ])
+AC_MSG_NOTICE([   Debug Mode               $USE_DEBUG])
+AC_MSG_NOTICE([   Use Warnings             $USE_WARNINGS])
+AC_MSG_NOTICE([   Use Strict Warnings      $USE_STRICTWARNINGS])
+AC_MSG_NOTICE([ ])
+AC_MSG_NOTICE([   GCC                      $CC])
+AC_MSG_NOTICE([ ])
 
 # end of autoconf script

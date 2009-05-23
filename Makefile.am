@@ -33,7 +33,7 @@ DIST_SUBDIRS				=
 # global flags
 AM_LDFLAGS				= -L$(builddir)/lib
 AM_LIBS					=
-AM_CFLAGS				= -W -Wall -Werror -O2
+AM_CFLAGS				= -O2 $(CFLAGS_WARNINGS)
 AM_CPPFLAGS				= -I$(top_srcdir)/include \
 					  -I$(top_builddir)/include
 AM_LIBTOOLFLAGS				=
