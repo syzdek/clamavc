@@ -68,10 +68,6 @@ Preparing the source for compiling:
 III. TODO list
 --------------
 
- * Test code against clamd with fake virus in order to verify correct
-   error reporting by the library.
- * review and clean up the code.
- * Test library on OS X 10.5, FreeBSD 7.2, Slackware 12.1, and Solaris 9
  * write README file.
  * write man pages for the functions.
  * document the API in texinfo.
