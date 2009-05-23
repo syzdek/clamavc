@@ -299,7 +299,7 @@ int32_t clamavc_contscan(CLAMAVC * clamp, const char * path)
       errno = EPROTO;
       return(-1);
    };
-   offset++;
+   offset += 2;
 
    if (clamp->verbose > 1)
       printf("<== %s\n", &buff[offset]);
@@ -506,7 +506,7 @@ int32_t clamavc_multiscan(CLAMAVC * clamp, const char * path)
       errno = EPROTO;
       return(-1);
    };
-   offset++;
+   offset += 2;
 
    if (clamp->verbose > 1)
       printf("<== %s\n", &buff[offset]);
@@ -731,7 +731,7 @@ int32_t clamavc_scan(CLAMAVC * clamp, const char * path)
       errno = EPROTO;
       return(-1);
    };
-   offset++;
+   offset += 2;
 
    if (clamp->verbose > 1)
       printf("<== %s\n", &buff[offset]);

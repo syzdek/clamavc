@@ -74,17 +74,31 @@ int main (int argc, char * argv[])
    if (!(clamp))
       return(0);
 
-   err = 0;
-
    if (clamavc_ping(clamp))
+   {
       perror("clamavc_ping()");
+      clamavc_close(clamp);
+      return(1);
+   };
 
-   if ((err = clamavc_multiscan(clamp, file)) == -1)
-      perror("clamavc_instream()");
+   switch(err = clamavc_multiscan(clamp, file))
+   {
+      case -1:
+         perror("clamavc_contscan()");
+         break;
+      case 0:
+         printf("not infected\n");
+         break;
+      default:
+         printf("infected\n");
+         break;
+   };
 
    clamavc_close(clamp);
 
-   return(err);
+   if (err)
+      return(1);
+   return(0);
 }
 
 /* end of source code */
