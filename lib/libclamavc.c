@@ -417,9 +417,11 @@ CLAMAVC * clamavc_initialize(void)
 /// @param[in]  path     directory path to scan
 int32_t clamavc_instream(CLAMAVC * clamp, const char * src, size_t nbyte)
 {
-   char    buff[1024];
-   int32_t offset;
-   int32_t len;
+   char     buff[1024];
+   int32_t  offset;
+   int32_t  len;
+   uint32_t pos;
+   uint32_t size;
 
    if (clamavc_connect(clamp, 0))
    {
@@ -427,6 +429,7 @@ int32_t clamavc_instream(CLAMAVC * clamp, const char * src, size_t nbyte)
       return(-1);
    };
 
+   // send command to clamd if not already in a stream
    if (!(clamp->instream))
    {
       if (clamp->verbose > 1)
@@ -439,57 +442,65 @@ int32_t clamavc_instream(CLAMAVC * clamp, const char * src, size_t nbyte)
    };
    clamp->instream = 1;
 
-   if (clamp->verbose > 1)
+   // send data to clamd
+   pos = 0;
+   while(pos < nbyte)
+   {
+      if (clamp->verbose > 1)
          printf("==> +++data+++\n");
 
-   len = clamavc_hton(nbyte, 4);
+      size = ((nbyte - pos) < clamp->streamMaxLen) ? (nbyte - pos) : clamp->streamMaxLen;
+
+      len = clamavc_hton(size, 4);
+      if ((len = write(clamp->s, &len, sizeof(len))) == -1)
+      {
+         clamavc_reset(clamp);
+         return(-1);
+      };
+
+      if ((len = write(clamp->s, &src[pos], size)) == -1)
+      {
+         clamavc_reset(clamp);
+         return(-1);
+      };
+
+      pos += size;
+   };
+   if (nbyte)
+      return(0);
+
+   // send data stream terminator
+   len = 0;
    if ((len = write(clamp->s, &len, sizeof(len))) == -1)
    {
       clamavc_reset(clamp);
       return(-1);
    };
 
-   if (nbyte)
+   // read result from clamd
+   clamp->instream = 0;
+   if ((len = read(clamp->s, buff, 1023)) == -1)
    {
-      if ((len = write(clamp->s, src, nbyte)) == -1)
-      {
-         clamavc_reset(clamp);
-         return(-1);
-      };
+      clamavc_reset(clamp);
+      return(-1);
+   };
+   buff[len] = '\0';
+   if (clamp->verbose > 1)
+      printf("<<< %s\n", buff);
+
+   // process result from clamd
+   for(offset = 0; ( (buff[offset]) && (buff[offset] != ':') ); offset++);
+   if (!(buff[offset]))
+   {
+      clamavc_reset(clamp);
+      errno = EPROTO;
+      return(-1);
+   };
+   offset += 2;
+   if (clamp->verbose > 1)
+      printf("<== %s\n", &buff[offset]);
+   if (!(strcmp(&buff[offset], "OK")))
       return(0);
-   };
-   
-   if (!(nbyte))
-   {
-      clamp->instream = 0;
-      if ((len = read(clamp->s, buff, 1023)) == -1)
-      {
-         clamavc_reset(clamp);
-         return(-1);
-      };
-      buff[len] = '\0';
-      if (clamp->verbose > 1)
-         printf("<<< %s\n", buff);
-
-      for(offset = 0; ( (buff[offset]) && (buff[offset] != ':') ); offset++);
-
-      if (!(buff[offset]))
-      {
-         clamavc_reset(clamp);
-         errno = EPROTO;
-         return(-1);
-      };
-      offset += 2;
-
-      if (clamp->verbose > 1)
-         printf("<== %s\n", &buff[offset]);
-
-      if (!(strcmp(&buff[offset], "OK")))
-      {
-         clamavc_reset(clamp);
-         return(0);
-      };
-   };
 
    return(1);
 }
@@ -807,7 +818,7 @@ int32_t clamavc_set_opt(CLAMAVC * clamp, uint32_t opt, const void * valp)
          break;
 
       case CLAMAVC_OSTREAMMAXLEN:
-         clamp->port = CLAMAVC_STREAMMAXLEN;
+         clamp->streamMaxLen = CLAMAVC_STREAMMAXLEN;
          if (valp)
             clamp->streamMaxLen = *((const int *)valp);
          break;
