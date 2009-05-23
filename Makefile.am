@@ -53,6 +53,15 @@ lib_LTLIBRARIES				= lib/libclamavc.la
 man_MANS				=
 
 
+# macros for data/invert-file
+data_invert_file_DEPENDENCIES		= Makefile
+data_invert_file_CPPFLAGS		= -DPROGRAM_NAME="\"invert-file\"" $(AM_CPPFLAGS)
+data_invert_file_CFLAGS			=
+data_invert_file_LDFLAGS		=
+data_invert_file_LDADD			=
+data_invert_file_SOURCES		= data/invert-file.c
+
+
 # macros for lib/libclamavc.la
 lib_libclamavc_la_DEPENDENCIES		= Makefile lib/libclamavc.sym
 lib_libclamavc_la_CFLAGS		= $(AM_CFLAGS)
@@ -144,9 +153,15 @@ CLEANFILES				= $(builddir)/a.out   $(srcdir)/a.out \
 					  stamp-vti $(srcdir)/stamp-vti \
 					  $(man_MANS) \
 					  @PACKAGE_TARNAME@-*.tar.* \
-					  @PACKAGE_TARNAME@-*.zip
-EXTRA_DIST				= lib/libclamavc.sym
-EXTRA_PROGRAMS				=
+					  @PACKAGE_TARNAME@-*.zip \
+					  $(EXTRA_PROGRAMS)
+EXTRA_DIST				= data/Makefile \
+					  data/README \
+					  data/infected.tar.gz.bin \
+					  data/invert-file.c \
+					  data/non-infected.tar.gz.bin \
+					  lib/libclamavc.sym
+EXTRA_PROGRAMS				= data/invert-file
 EXTRA_TEXINFOS				=
 TESTS					=
 XFAIL_TESTS				=
@@ -179,8 +194,26 @@ do_subst_dt = \
 		chmod 0644 ${@}
 
 
+# custom targets
+.PHONY: data
+
+data: data/infected.tar.gz data/non-infected.tar.gz
+
+data/infected.tar.gz: Makefile data/invert-file $(srcdir)/data/infected.tar.gz.bin
+	mkdir -p data
+	./data/invert-file $(srcdir)/data/infected.tar.gz.bin \
+		data/infected.tar.gz
+
+data/non-infected.tar.gz: Makefile data/invert-file $(srcdir)/data/non-infected.tar.gz.bin
+	mkdir -p data
+	./data/invert-file $(srcdir)/data/non-infected.tar.gz.bin \
+		data/non-infected.tar.gz
+
+
 # local targets
 clean-local:
+	rm -f data/infected.tar.gz
+	rm -f data/non-infected.tar.gz
 
 distclean-local:
 	-rm -fR $(srcdir)/autom4te.cache	# removes autoconf cache
