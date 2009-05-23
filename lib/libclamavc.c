@@ -127,7 +127,6 @@ int32_t clamavc_connect(CLAMAVC * clamp, unsigned idsess)
    int                   port;
    char                  addr[INET6_ADDRSTRLEN+1];
    struct hostent      * hp;
-   //struct sockaddr     * sa;
    struct sockaddr_in    sa;
    struct sockaddr_in6   sa6;
 
