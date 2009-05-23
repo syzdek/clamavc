@@ -159,7 +159,7 @@ int32_t clamavc_connect(CLAMAVC * clamp, unsigned idsess)
          memcpy(&sa6.sin6_addr, hp->h_addr_list[i], (size_t)hp->h_length);
          sa6.sin6_family = hp->h_addrtype;
          sa6.sin6_port   = port;
-         sa6.sin6_len    = sizeof(struct sockaddr_in6);
+         //sa6.sin6_len    = sizeof(struct sockaddr_in6);
 
          if ((s = socket(AF_INET6, SOCK_STREAM, 0)) < 0)
             return(-1);
