@@ -157,6 +157,7 @@ CLEANFILES				= $(builddir)/a.out   $(srcdir)/a.out \
 					  $(EXTRA_PROGRAMS)
 EXTRA_DIST				= data/Makefile \
 					  data/README \
+					  data/eicar-test.txt.bin \
 					  data/infected.tar.gz.bin \
 					  data/invert-file.c \
 					  data/non-infected.tar.gz.bin \
@@ -197,7 +198,12 @@ do_subst_dt = \
 # custom targets
 .PHONY: data
 
-data: data/infected.tar.gz data/non-infected.tar.gz
+data: data/eicar-test.txt data/infected.tar.gz data/non-infected.tar.gz
+
+data/eicar-test.txt: Makefile data/invert-file $(srcdir)/data/eicar-test.txt.bin
+	mkdir -p data
+	./data/invert-file $(srcdir)/data/eicar-test.txt.bin \
+		data/eicar-test.txt
 
 data/infected.tar.gz: Makefile data/invert-file $(srcdir)/data/infected.tar.gz.bin
 	mkdir -p data
@@ -212,6 +218,7 @@ data/non-infected.tar.gz: Makefile data/invert-file $(srcdir)/data/non-infected.
 
 # local targets
 clean-local:
+	rm -f data/eicar-test.txt
 	rm -f data/infected.tar.gz
 	rm -f data/non-infected.tar.gz
 
