@@ -82,6 +82,14 @@ AC_PROG_LIBTOOL
 AC_CLAMAVC_OPTION_DEBUG
 AC_CLAMAVC_OPTION_WARNINGS
 
+# library checks
+AC_SEARCH_LIBS(connect,         socket nsl,,[AC_MSG_ERROR([missing required library function])])
+AC_SEARCH_LIBS(inet_ntop,       resolv nsl,,[AC_MSG_ERROR([missing required library function])])
+AC_SEARCH_LIBS(setsockopt,      socket nsl,,[AC_MSG_ERROR([missing required library function])])
+AC_SEARCH_LIBS(socket,          socket nsl,,[AC_MSG_ERROR([missing required library function])])
+AC_SEARCH_LIBS(gethostbyname,   resolv nsl,,[AC_MSG_ERROR([missing required library function])])
+AC_SEARCH_LIBS(gethostbyname2,  resolv nsl,,)
+
 # Creates outputs
 AC_CONFIG_FILES([Makefile])
 AC_OUTPUT
