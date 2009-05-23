@@ -65,7 +65,10 @@ examples_clamavc_instream_CPPFLAGS	= -DPROGRAM_NAME="\"clamavc-instream\"" $(AM_
 examples_clamavc_instream_CFLAGS	= $(AM_CFLAGS)
 examples_clamavc_instream_LDFLAGS	= $(AM_LDFLAGS)
 examples_clamavc_instream_LDADD		= $(AM_LDADD) lib/libclamavc.la
-examples_clamavc_instream_SOURCES	= include/clamavc.h examples/clamavc-instream.c
+examples_clamavc_instream_SOURCES	= include/clamavc.h \
+					  examples/clamavc-common.c \
+					  examples/clamavc-common.h \
+					  examples/clamavc-instream.c
 
 
 # miscellaneous lists

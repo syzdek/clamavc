@@ -21,10 +21,9 @@
  *  @ACS_LICENSE_HEADER_END@
  */
 /**
- *  @file examples/clamavc.c simple client using libclamavc.la
+ *  @file examples/clamavc-instream.c simple client using libclamavc.la
  */
-#define _CLAMAVC_SRC_CLAMAVC_C 1
-
+#define _CLAMAVC_SRC_CLAMAVC_INSTREAM_C 1
 
 ///////////////
 //           //
@@ -37,48 +36,7 @@
 #include <stdlib.h>
 #include <getopt.h>
 
-
-///////////////////
-//               //
-//  Definitions  //
-//               //
-///////////////////
-
-#ifndef PACKAGE_BUGREPORT
-#define PACKAGE_BUGREPORT "david.syzdek@acsalaska.net"
-#endif
-
-#ifndef PACKAGE_NAME
-#define PACKAGE_NAME ""
-#endif
-
-#ifndef PACKAGE_VERSION
-#define PACKAGE_VERSION ""
-#endif
-
-#ifndef PROGRAM_NAME
-#define PROGRAM_NAME "clamavc"
-#endif
-
-
-///////////////////
-//               //
-//  i18l Support //
-//               //
-///////////////////
-
-#ifdef HAVE_GETTEXT
-#   include <gettext.h>
-#   include <libintl.h>
-#   define _(String) gettext (String)
-#   define gettext_noop(String) String
-#   define N_(String) gettext_noop (String)
-#else
-#   define _(String) (String)
-#   define N_(String) String
-#   define textdomain(Domain)
-#   define bindtextdomain(Package, Directory)
-#endif
+#include "clamavc-common.h"
 
 
 //////////////////
@@ -89,12 +47,6 @@
 
 // main statement
 int main PARAMS((int argc, char * argv[]));
-
-// prints program usage and exits
-void usage PARAMS((void));
-
-// prints program version and exits
-void version PARAMS((void));
 
 
 /////////////////
@@ -230,48 +182,6 @@ int main (int argc, char * argv[])
    clamavc_close(clamp);
 
    return(0);
-}
-
-
-/// prints program usage and exits
-void usage(void)
-{
-   // TRANSLATORS: The following strings provide usage for command. These
-   // strings are displayed if the program is passed `--help' on the command
-   // line. The two strings referenced are: PROGRAM_NAME, and
-   // PACKAGE_BUGREPORT
-   printf(_("Usage: %s [options]\n"
-         "  -h host                   host name of ClamAV server\n"
-         "  -H, --help                print this help and exit\n"
-         "  -p port                   TCP port number of ClamAV server\n"
-         "  -s file                   local unix socket of ClamAV server\n"
-         "  -S bytes                  max stream chunk size to send\n"
-         "  -v, --verbose             print verbose messages\n"
-         "  -V, --version             print version number and exit\n"
-         "\nReport bugs to <%s>.\n"
-      ), PROGRAM_NAME, PACKAGE_BUGREPORT
-   );
-   return;
-}
-
-
-/// prints program version and exits
-void version(void)
-{
-   // TRANSLATORS: The following strings provide version and copyright
-   // information if the program is passed --version on the command line.
-   // The three strings referenced are: PROGRAM_NAME, PACKAGE_NAME,
-   // PACKAGE_VERSION.
-   printf(_( "%s (%s) %s\n"
-         "Written by Alaska Communications Systems Group, Inc.\n"
-         "\n"
-         "Copyright (C) 2009 Alaska Communications Systems Group, Inc.\n"
-         "This is proprietary software; copying the source code or binary is prohibited.\n"
-         "There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR\n"
-         "PURPOSE.\n"
-      ), PROGRAM_NAME, PACKAGE_NAME, PACKAGE_VERSION
-   );
-   return;
 }
 
 /* end of source code */
