@@ -21,18 +21,19 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 @ACS_LICENSE_HEADER_END@
 
 
-Contents
-========
+Table of Contents
+=================
 
-  I. About
- II. Obtaining source code
-III. TODO list
- IV. Submitting patches
-  V. Additional resources
+1 About
+  1.1 Supported systems
+2 Obtaining Source Code
+3 TODO List
+4 Submitting Patches
+5 Additional Resources
 
 
-I. About
---------
+1 About
+=======
 
 Clam AntiVirus Client Library provides a simple API to the ClamAV daemon.
 ClamAVC does not require ClamAV to be installed. ClamAVC communicates with
@@ -40,8 +41,20 @@ clamd using clamd's documented protocol using either TCP or a local Unix
 domain socket.
 
 
-II. Obtaining source code
--------------------------
+
+1.1 Supported Systems
+---------------------
+
+ClamAVC has been tested on the following platforms:
+
+ * OS X 10.5.8
+ * FreeBSD 6.2
+ * Slackware 12.1.0
+
+
+
+2 Obtaining Source Code
+=======================
 
 Downloading source code from Git requires the following software:
 
@@ -65,8 +78,8 @@ Preparing the source for compiling:
  $ automake -c -a
 
 
-III. TODO list
---------------
+2. TODO List
+============
 
  * write README file.
  * write man pages for the functions.
@@ -76,14 +89,14 @@ III. TODO list
  * submit to ClamAV as contribware.
 
 
-IV. Submitting patches
-----------------------
+4. Submitting Patches
+=====================
 
 To be written.
 
 
-V. Additional resources
------------------------
+5. Additional Resources
+=======================
 
 ClamAV Client Library source code:
    http://github.com/syzdek/clamavc/tree
