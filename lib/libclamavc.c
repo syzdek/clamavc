@@ -442,7 +442,7 @@ int32_t clamavc_instream(CLAMAVC * clamp, const char * src, size_t nbyte)
          errno = EPROTO;
          return(-1);
       };
-      offset++;
+      offset += 2;
 
       if (clamp->verbose > 1)
          printf("<== %s\n", &buff[offset]);
