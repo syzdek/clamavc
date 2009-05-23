@@ -84,9 +84,6 @@ struct clamavc
 // connects to remote ClamAV daemon
 int32_t clamavc_connect PARAMS((CLAMAVC * clamp, unsigned idsess));
 
-// disconnects from remote ClamAV daemon
-void clamavc_disconnect PARAMS((CLAMAVC * clamp));
-
 // converts from host byte order to network byte order
 uint32_t clamavc_hton PARAMS((uint32_t host, size_t width));
 
@@ -111,7 +108,7 @@ void clamavc_close(CLAMAVC * clamp)
    if (clamp->socket)
       free(clamp->socket);
 
-   clamavc_disconnect(clamp);
+   clamavc_reset(clamp);
 
    memset(clamp, 0, sizeof(CLAMAVC));
    free(clamp);
@@ -141,7 +138,7 @@ int32_t clamavc_connect(CLAMAVC * clamp, unsigned idsess)
       return(0);
 
    if (clamp->idsess != idsess)
-      clamavc_disconnect(clamp);
+      clamavc_reset(clamp);
 
    if (clamp->s != -1)
       return(0);
@@ -274,13 +271,13 @@ int32_t clamavc_contscan(CLAMAVC * clamp, const char * path)
 
    if ((write(clamp->s, buff, nbyte)) == -1)
    {
-      clamavc_disconnect(clamp);
+      clamavc_reset(clamp);
       return(-1);
    };
 
    if ((len = read(clamp->s, buff, 1023)) == -1)
    {
-      clamavc_disconnect(clamp);
+      clamavc_reset(clamp);
       return(-1);
    };
    buff[len] = '\0';
@@ -302,28 +299,6 @@ int32_t clamavc_contscan(CLAMAVC * clamp, const char * path)
       return(0);
 
    return(1);
-}
-
-
-/// disconnects from remote ClamAV daemon
-/// @param[in]  clamp    pointer to ClamAV Client session data
-void clamavc_disconnect(CLAMAVC * clamp)
-{
-   if (!(clamp))
-      return;
-   if (clamp->s == -1)
-      return;
-   if (clamp->idsess)
-   {
-      if (clamp->verbose > 1)
-         printf(">>> zEND\n");
-      write(clamp->s, "zEND", 5);
-   };
-   clamp->idsess   = 0;
-   clamp->instream = 0;
-   close(clamp->s);
-   clamp->s = -1;
-   return;
 }
 
 
@@ -412,7 +387,7 @@ int32_t clamavc_instream(CLAMAVC * clamp, const char * src, size_t nbyte)
          printf(">>> zINSTREAM\n");
       if ((len = write(clamp->s, "zINSTREAM", 10)) == -1)
       {
-         clamavc_disconnect(clamp);
+         clamavc_reset(clamp);
          return(-1);
       };
    };
@@ -424,7 +399,7 @@ int32_t clamavc_instream(CLAMAVC * clamp, const char * src, size_t nbyte)
    len = clamavc_hton(nbyte, 4);
    if ((len = write(clamp->s, &len, sizeof(len))) == -1)
    {
-      clamavc_disconnect(clamp);
+      clamavc_reset(clamp);
       return(-1);
    };
 
@@ -432,7 +407,7 @@ int32_t clamavc_instream(CLAMAVC * clamp, const char * src, size_t nbyte)
    {
       if ((len = write(clamp->s, src, nbyte)) == -1)
       {
-         clamavc_disconnect(clamp);
+         clamavc_reset(clamp);
          return(-1);
       };
       return(0);
@@ -443,7 +418,7 @@ int32_t clamavc_instream(CLAMAVC * clamp, const char * src, size_t nbyte)
       clamp->instream = 0;
       if ((len = read(clamp->s, buff, 1023)) == -1)
       {
-         clamavc_disconnect(clamp);
+         clamavc_reset(clamp);
          return(-1);
       };
       buff[len] = '\0';
@@ -454,7 +429,7 @@ int32_t clamavc_instream(CLAMAVC * clamp, const char * src, size_t nbyte)
 
       if (!(buff[offset]))
       {
-         clamavc_disconnect(clamp);
+         clamavc_reset(clamp);
          errno = EPROTO;
          return(-1);
       };
@@ -465,7 +440,7 @@ int32_t clamavc_instream(CLAMAVC * clamp, const char * src, size_t nbyte)
 
       if (!(strcmp(&buff[offset], "OK")))
       {
-         clamavc_disconnect(clamp);
+         clamavc_reset(clamp);
          return(0);
       };
    };
@@ -502,13 +477,13 @@ int32_t clamavc_multiscan(CLAMAVC * clamp, const char * path)
 
    if ((len = write(clamp->s, buff, nbyte)) == -1)
    {
-      clamavc_disconnect(clamp);
+      clamavc_reset(clamp);
       return(-1);
    };
 
    if ((len = read(clamp->s, buff, 1023)) == -1)
    {
-      clamavc_disconnect(clamp);
+      clamavc_reset(clamp);
       return(-1);
    };
    buff[len] = '\0';
@@ -518,7 +493,7 @@ int32_t clamavc_multiscan(CLAMAVC * clamp, const char * path)
    for(offset = 0; ( (buff[offset]) && (buff[offset] != ':') ); offset++);
    if (!(buff[offset]))
    {
-      clamavc_disconnect(clamp);
+      clamavc_reset(clamp);
       errno = EPROTO;
       return(-1);
    };
@@ -529,7 +504,7 @@ int32_t clamavc_multiscan(CLAMAVC * clamp, const char * path)
 
    if (!(strcmp(&buff[offset], "OK")))
    {
-      clamavc_disconnect(clamp);
+      clamavc_reset(clamp);
       return(0);
    };
 
@@ -552,13 +527,13 @@ int32_t clamavc_ping(CLAMAVC * clamp)
 
    if ((len = write(clamp->s, "zPING", 6)) == -1)
    {
-      clamavc_disconnect(clamp);
+      clamavc_reset(clamp);
       return(-1);
    };
 
    if ((len = clamavc_read(clamp, buff, 1023)) == -1)
    {
-      clamavc_disconnect(clamp);
+      clamavc_reset(clamp);
       return(-1);
    };
 
@@ -650,13 +625,13 @@ int32_t clamavc_reload(CLAMAVC * clamp)
 
    if ((len = write(clamp->s, "zRELOAD", 8)) == -1)
    {
-      clamavc_disconnect(clamp);
+      clamavc_reset(clamp);
       return(-1);
    };
 
    if ((len = read(clamp->s, buff, 1023)) == -1)
    {
-      clamavc_disconnect(clamp);
+      clamavc_reset(clamp);
       return(-1);
    };
 
@@ -666,13 +641,36 @@ int32_t clamavc_reload(CLAMAVC * clamp)
 
    if ((strcmp(buff, "RELOADING")))
    {
-      clamavc_disconnect(clamp);
+      clamavc_reset(clamp);
       errno = EPROTO;
       return(-1);
    };
 
-   clamavc_disconnect(clamp);
+   clamavc_reset(clamp);
 
+   return(0);
+}
+
+
+/// reset ClamAV client library session
+/// @param[in]  clamp    pointer to ClamAV Client session data
+int32_t clamavc_reset(CLAMAVC * clamp)
+{
+   if (!(clamp))
+      return(errno = EINVAL);
+   if (clamp->s != -1)
+   {
+      if (clamp->idsess)
+      {
+         if (clamp->verbose > 1)
+            printf(">>> zEND\n");
+         write(clamp->s, "zEND", 5);
+      };
+      close(clamp->s);
+   };
+   clamp->s        = -1;
+   clamp->idsess   = 0;
+   clamp->instream = 0;
    return(0);
 }
 
@@ -705,13 +703,13 @@ int32_t clamavc_scan(CLAMAVC * clamp, const char * path)
 
    if ((len = write(clamp->s, buff, nbyte)) == -1)
    {
-      clamavc_disconnect(clamp);
+      clamavc_reset(clamp);
       return(-1);
    };
 
    if ((len = clamavc_read(clamp, buff, 1023)) == -1)
    {
-      clamavc_disconnect(clamp);
+      clamavc_reset(clamp);
       return(-1);
    };
    buff[len] = '\0';
@@ -812,13 +810,13 @@ int32_t clamavc_shutdown(CLAMAVC * clamp)
 
    if ((len = write(clamp->s, "zSHUTDOWN", 10)) == -1)
    {
-      clamavc_disconnect(clamp);
+      clamavc_reset(clamp);
       return(-1);
    };
 
    if ((len = read(clamp->s, buff, 1023)) == -1)
    {
-      clamavc_disconnect(clamp);
+      clamavc_reset(clamp);
       return(-1);
    };
 
@@ -826,7 +824,7 @@ int32_t clamavc_shutdown(CLAMAVC * clamp)
    if (clamp->verbose > 1)
       printf("<<< %s\n", buff);
 
-   clamavc_disconnect(clamp);
+   clamavc_reset(clamp);
 
    return(0);
 }
@@ -846,13 +844,13 @@ const char * clamavc_version(CLAMAVC * clamp)
 
    if ((len = write(clamp->s, "zVERSION", 9)) == -1)
    {
-      clamavc_disconnect(clamp);
+      clamavc_reset(clamp);
       return(NULL);
    };
 
    if ((len = clamavc_read(clamp, clamp->version, CLAMAVC_VER_LEN-1)) == -1)
    {
-      clamavc_disconnect(clamp);
+      clamavc_reset(clamp);
       return(NULL);
    };
 

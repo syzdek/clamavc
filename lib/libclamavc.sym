@@ -48,6 +48,7 @@ clamavc_multiscan
 clamavc_ping
 clamavc_rawscan
 clamavc_reload
+clamavc_reset
 clamavc_scan
 clamavc_set_opt
 clamavc_shutdown

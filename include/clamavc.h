@@ -175,6 +175,9 @@ CLAMAVC_F(int32_t) clamavc_ping PARAMS((CLAMAVC * clamp));
 // reloads the daemon's databases
 CLAMAVC_F(int32_t) clamavc_reload PARAMS((CLAMAVC * clamp));
 
+// reset ClamAV client library session
+CLAMAVC_F(int32_t) clamavc_reset PARAMS((CLAMAVC * clamp));
+
 // scans a file or directory with archive support enabled
 CLAMAVC_F(int32_t) clamavc_scan PARAMS((CLAMAVC * clamp, const char * path));
 
