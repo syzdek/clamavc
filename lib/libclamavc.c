@@ -54,6 +54,10 @@
 #define CLAMAVC_BUFF_LEN   128
 #define CLAMAVC_VER_LEN    128
 
+#ifndef INET6_ADDRSTRLEN
+#define INET6_ADDRSTRLEN   512
+#endif
+
 
 /////////////////
 //             //
@@ -128,7 +132,9 @@ int32_t clamavc_connect(CLAMAVC * clamp, unsigned idsess)
    char                  addr[INET6_ADDRSTRLEN+1];
    struct hostent      * hp;
    struct sockaddr_in    sa;
+#ifdef AF_INET6
    struct sockaddr_in6   sa6;
+#endif
 
    if (!(clamp))
       return(errno = EINVAL);
@@ -145,6 +151,7 @@ int32_t clamavc_connect(CLAMAVC * clamp, unsigned idsess)
    port = clamavc_hton(clamp->port, 2);
 
    // attempts IPv6 connection
+#ifdef AF_INET6
    if ((hp = gethostbyname2(clamp->host, AF_INET6)))
       for(i = 0; hp->h_addr_list[i]; i++)
       {
@@ -190,8 +197,10 @@ int32_t clamavc_connect(CLAMAVC * clamp, unsigned idsess)
 
          close(s);
       };
+#endif
 
    // attempts IPv4 connection
+#ifdef AF_INET
    if ((hp = gethostbyname2(clamp->host, AF_INET)))
       for(i = 0; hp->h_addr_list[i]; i++)
       {
@@ -199,7 +208,7 @@ int32_t clamavc_connect(CLAMAVC * clamp, unsigned idsess)
          memcpy(&sa.sin_addr, hp->h_addr_list[i], (size_t)hp->h_length);
          sa.sin_family = hp->h_addrtype;
          sa.sin_port   = port;
-         sa.sin_len    = sizeof(struct sockaddr_in6);
+         //sa.sin_len    = sizeof(struct sockaddr_in);
 
          if ((s = socket(AF_INET, SOCK_STREAM, 0)) < 0)
             return(-1);
@@ -237,6 +246,7 @@ int32_t clamavc_connect(CLAMAVC * clamp, unsigned idsess)
 
          close(s);
       };
+#endif
 
    return(-1);
 }
