@@ -126,8 +126,8 @@
 
 // ClamAV Client options
 #define CLAMAVC_OHOST              0x01
+#define CLAMAVC_OSOCKET            0x01
 #define CLAMAVC_OPORT              0x02
-#define CLAMAVC_OSOCKET            0x03
 #define CLAMAVC_OSTREAMMAXLEN      0x04
 #define CLAMAVC_OVERBOSE           0x05
 

@@ -37,6 +37,7 @@
 #include <errno.h>
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <sys/un.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <stdio.h>
@@ -75,7 +76,6 @@ struct clamavc
    unsigned    idsess;       ///< IDSESSION state
    unsigned    instream;     ///< INSTREAM state
    char      * host;         ///< network host running the ClamAV daemon
-   char      * socket;       ///< unix domain socket for connections to the ClamAV daemon
    char        version[CLAMAVC_VER_LEN];
 };
 
@@ -109,8 +109,6 @@ void clamavc_close(CLAMAVC * clamp)
 
    if (clamp->host)
       free(clamp->host);
-   if (clamp->socket)
-      free(clamp->socket);
 
    clamavc_reset(clamp);
 
@@ -131,9 +129,14 @@ int32_t clamavc_connect(CLAMAVC * clamp, unsigned idsess)
    int                   port;
    char                  addr[INET6_ADDRSTRLEN+1];
    struct hostent      * hp;
+#ifdef AF_INET
    struct sockaddr_in    sa;
+#endif
 #ifdef AF_INET6
    struct sockaddr_in6   sa6;
+#endif
+#ifdef AF_UNIX
+   struct sockaddr_un    su;
 #endif
 
    if (!(clamp))
@@ -149,6 +152,40 @@ int32_t clamavc_connect(CLAMAVC * clamp, unsigned idsess)
       return(0);
 
    port = clamavc_hton(clamp->port, 2);
+
+   // attempts Unix domain socket connection
+#ifdef AF_UNIX
+   if (clamp->host[0] == '/')
+   {
+      su.sun_path[103] = '\0';
+      strncpy(su.sun_path, clamp->host, 103);
+      su.sun_family = AF_UNIX;
+
+      if ((s = socket(AF_UNIX, SOCK_STREAM, 0)) < 0)
+         return(-1);
+
+      if (clamp->verbose)
+         printf("Trying %s...\n", clamp->host);
+
+      if (connect(s, (struct sockaddr *)&su, sizeof(su)) != -1)
+      {
+         if (clamp->verbose)
+            printf("Connected to %s.\n", clamp->host);
+         //fcntl(s, F_SETFL, O_NONBLOCK);
+         if (idsess)
+         {
+            if (clamp->verbose > 1)
+               printf(">>> zIDSESSION\n");
+            if ((write(s, "zIDSESSION", 11)) == -1)
+               return(-1);
+         };
+         clamp->idsess = idsess;
+         clamp->s = s;
+         return(0);
+      };
+      return(-1);
+   };
+#endif
 
    // attempts IPv6 connection
 #ifdef AF_INET6
@@ -755,9 +792,6 @@ int32_t clamavc_set_opt(CLAMAVC * clamp, uint32_t opt, const void * valp)
    switch(opt)
    {
       case CLAMAVC_OHOST:
-         if (clamp->socket)
-            free(clamp->socket);
-         clamp->socket = NULL;
          if (clamp->host)
             free(clamp->host);
          clamp->host = NULL;
@@ -770,18 +804,6 @@ int32_t clamavc_set_opt(CLAMAVC * clamp, uint32_t opt, const void * valp)
          clamp->port = CLAMAVC_PORT;
          if (valp)
             clamp->port = *((const int *)valp) & 0xFFFF;
-         break;
-
-      case CLAMAVC_OSOCKET:
-         if (clamp->socket)
-            free(clamp->socket);
-         clamp->socket = NULL;
-         if (clamp->host)
-            free(clamp->host);
-         clamp->host = NULL;
-         if (valp)
-            if (!(clamp->socket = strdup((const char *)valp)))
-               return(errno = ENOMEM);
          break;
 
       case CLAMAVC_OSTREAMMAXLEN:
