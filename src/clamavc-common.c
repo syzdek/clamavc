@@ -26,6 +26,16 @@
 #define _CLAMAVC_SRC_CLAMAVC_COMMON_C 1
 #include "clamavc-common.h"
 
+///////////////
+//           //
+//  Headers  //
+//           //
+///////////////
+
+#include <stdio.h>
+#include <stdlib.h>
+
+
 /////////////////
 //             //
 //  Functions  //
@@ -81,12 +91,12 @@ int config(int argc, char * argv[], CLAMAVC ** clampp, const char ** filep)
             return(0);
 
          case 'p':
-            uval = strtoumax(optarg, NULL, 0);
+            uval = strtoul(optarg, NULL, 0);
             clamavc_set_opt(clamp, CLAMAVC_OPORT, &uval);
             break;
 
          case 's':
-            uval = strtoumax(optarg, NULL, 0);
+            uval = strtoul(optarg, NULL, 0);
             clamavc_set_opt(clamp, CLAMAVC_STREAMMAXLEN, &uval);
             break;
 
