@@ -42,7 +42,7 @@ DEFS					= @DEFS@
 
 
 # items to build
-noinst_PROGRAMS				= examples/clamavc-instream
+noinst_PROGRAMS				= src/clamavc-instream
 include_HEADERS				= include/clamavc.h
 lib_LTLIBRARIES				= lib/libclamavc.la
 man_MANS				=
@@ -60,15 +60,15 @@ lib_libclamavc_la_SOURCES		= include/clamavc.h lib/libclamavc.c
 
 
 # macros for src/clamavc
-examples_clamavc_instream_DEPENDENCIES	= Makefile lib/libclamavc.la
-examples_clamavc_instream_CPPFLAGS	= -DPROGRAM_NAME="\"clamavc-instream\"" $(AM_CPPFLAGS)
-examples_clamavc_instream_CFLAGS	= $(AM_CFLAGS)
-examples_clamavc_instream_LDFLAGS	= $(AM_LDFLAGS)
-examples_clamavc_instream_LDADD		= $(AM_LDADD) lib/libclamavc.la
-examples_clamavc_instream_SOURCES	= include/clamavc.h \
-					  examples/clamavc-common.c \
-					  examples/clamavc-common.h \
-					  examples/clamavc-instream.c
+src_clamavc_instream_DEPENDENCIES	= Makefile lib/libclamavc.la
+src_clamavc_instream_CPPFLAGS		= -DPROGRAM_NAME="\"clamavc-instream\"" $(AM_CPPFLAGS)
+src_clamavc_instream_CFLAGS		= $(AM_CFLAGS)
+src_clamavc_instream_LDFLAGS		= $(AM_LDFLAGS)
+src_clamavc_instream_LDADD		= $(AM_LDADD) lib/libclamavc.la
+src_clamavc_instream_SOURCES		= include/clamavc.h \
+					  src/clamavc-common.c \
+					  src/clamavc-common.h \
+					  src/clamavc-instream.c
 
 
 # miscellaneous lists
