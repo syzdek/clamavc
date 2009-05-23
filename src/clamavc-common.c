@@ -57,8 +57,9 @@ int config(int argc, char * argv[], CLAMAVC ** clampp, const char ** filep)
 
    option_index = 0;
    verbose      = 0;
-   *filep       = NULL;
    *clampp      = NULL;
+   if (filep)
+      *filep       = NULL;
 
    if (!(clamp = clamavc_initialize()))
    {
