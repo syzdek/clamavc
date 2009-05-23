@@ -119,12 +119,23 @@ int config(int argc, char * argv[], CLAMAVC ** clampp, const char ** filep)
       };
    };
 
-   if ((optind+1) != argc)
+   if (filep)
    {
-      fprintf(stderr, _("%s: missing required argument\n"), PROGRAM_NAME);
-      fprintf(stderr, _("Try `%s --help' for more information.\n"), PROGRAM_NAME);
-      clamavc_close(clamp);
-      return(-1);
+      if ((optind+1) != argc)
+      {
+         fprintf(stderr, _("%s: missing required argument\n"), PROGRAM_NAME);
+         fprintf(stderr, _("Try `%s --help' for more information.\n"), PROGRAM_NAME);
+         clamavc_close(clamp);
+         return(-1);
+      };
+   } else {
+      if ((optind) != argc)
+      {
+         fprintf(stderr, _("%s: unknown argument -- %s\n"), PROGRAM_NAME, argv[optind-1]);
+         fprintf(stderr, _("Try `%s --help' for more information.\n"), PROGRAM_NAME);
+         clamavc_close(clamp);
+         return(-1);
+      };
    };
 
    if (verbose)
@@ -138,7 +149,8 @@ int config(int argc, char * argv[], CLAMAVC ** clampp, const char ** filep)
       printf("%s\n", str);
    };
 
-   *filep  = argv[optind];
+   if (filep)
+      *filep  = argv[optind];
    *clampp = clamp;
 
    return(0);
