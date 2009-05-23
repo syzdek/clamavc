@@ -65,11 +65,11 @@
 struct clamavc
 {
    int         s;            ///< socket handle to ClamAV daemon
-   int         port;         ///< TCP port accepting connections for the ClamAV daemon
-   int         streamMaxLen; ///< max chunck size to send to clamd 
-   int         verbose;      ///< toggle verbose mode
-   int         idsess;       ///< IDSESSION state
-   int         instream;     ///< in stream state
+   unsigned    port;         ///< TCP port accepting connections for the ClamAV daemon
+   unsigned    streamMaxLen; ///< max chunck size to send to clamd
+   unsigned    verbose;      ///< toggle verbose mode
+   unsigned    idsess;       ///< IDSESSION state
+   unsigned    instream;     ///< INSTREAM state
    char      * host;         ///< network host running the ClamAV daemon
    char      * socket;       ///< unix domain socket for connections to the ClamAV daemon
    char        version[CLAMAVC_VER_LEN];
@@ -82,7 +82,7 @@ struct clamavc
 //////////////////
 
 // connects to remote ClamAV daemon
-int32_t clamavc_connect PARAMS((CLAMAVC * clamp, int idsess));
+int32_t clamavc_connect PARAMS((CLAMAVC * clamp, unsigned idsess));
 
 // disconnects from remote ClamAV daemon
 void clamavc_disconnect PARAMS((CLAMAVC * clamp));
@@ -91,7 +91,7 @@ void clamavc_disconnect PARAMS((CLAMAVC * clamp));
 uint32_t clamavc_hton PARAMS((uint32_t host, size_t width));
 
 // reads a data stream from the ClamAV daemon
-int32_t clamavc_read PARAMS((CLAMAVC * clamp, char * dst, ssize_t len));
+int32_t clamavc_read PARAMS((CLAMAVC * clamp, char * dst, size_t nbyte));
 
 /////////////////
 //             //
@@ -122,7 +122,7 @@ void clamavc_close(CLAMAVC * clamp)
 
 /// connects to remote ClamAV daemon
 /// @param[in]  clamp    pointer to ClamAV Client session data
-int32_t clamavc_connect(CLAMAVC * clamp, int idsess)
+int32_t clamavc_connect(CLAMAVC * clamp, unsigned idsess)
 {
    int                   i;
    int                   s;
@@ -153,7 +153,7 @@ int32_t clamavc_connect(CLAMAVC * clamp, int idsess)
       for(i = 0; hp->h_addr_list[i]; i++)
       {
          memset(&sa6, 0, sizeof(struct sockaddr_in6));
-         memcpy(&sa6.sin6_addr, hp->h_addr_list[i], hp->h_length);
+         memcpy(&sa6.sin6_addr, hp->h_addr_list[i], (size_t)hp->h_length);
          sa6.sin6_family = hp->h_addrtype;
          sa6.sin6_port   = port;
          sa6.sin6_len    = sizeof(struct sockaddr_in6);
@@ -200,7 +200,7 @@ int32_t clamavc_connect(CLAMAVC * clamp, int idsess)
       for(i = 0; hp->h_addr_list[i]; i++)
       {
          memset(&sa, 0, sizeof(struct sockaddr_in));
-         memcpy(&sa.sin_addr, hp->h_addr_list[i], hp->h_length);
+         memcpy(&sa.sin_addr, hp->h_addr_list[i], (size_t)hp->h_length);
          sa.sin_family = hp->h_addrtype;
          sa.sin_port   = port;
          sa.sin_len    = sizeof(struct sockaddr_in6);
@@ -253,21 +253,26 @@ int32_t clamavc_contscan(CLAMAVC * clamp, const char * path)
 {
    char    buff[1024];
    ssize_t len;
-   ssize_t offset;
+   size_t  offset;
+   size_t  nbyte;
 
    if (clamavc_connect(clamp, 0))
       return(-1);
 
-   if ((len = snprintf(buff, 1024, "zCONTSCAN %s", path)) > 1024)
+   if ((len = snprintf(buff, 1023, "zCONTSCAN %s", path)) < 0)
+      return(-1);
+   if (len > 1023)
    {
       errno = ENOBUFS;
       return(-1);
    };
+   buff[len] = '\0';
+   nbyte = len + 1;
 
    if (clamp->verbose > 1)
       printf(">>> %s\n", buff);
 
-   if ((len = write(clamp->s, buff, len+1)) == -1)
+   if ((write(clamp->s, buff, nbyte)) == -1)
    {
       clamavc_disconnect(clamp);
       return(-1);
@@ -389,7 +394,7 @@ CLAMAVC * clamavc_initialize(void)
 /// recursively scans a directory using multiple threads
 /// @param[in]  clamp    pointer to ClamAV Client session data
 /// @param[in]  path     directory path to scan
-int32_t clamavc_instream(CLAMAVC * clamp, const char * src, int32_t nbyte)
+int32_t clamavc_instream(CLAMAVC * clamp, const char * src, size_t nbyte)
 {
    char    buff[1024];
    int32_t offset;
@@ -476,22 +481,26 @@ int32_t clamavc_multiscan(CLAMAVC * clamp, const char * path)
 {
    char    buff[1024];
    ssize_t len;
-   ssize_t offset;
+   size_t  offset;
+   size_t  nbyte;
 
    if (clamavc_connect(clamp, 0))
       return(-1);
 
-   if ((len = snprintf(buff, 1024, "zMULTISCAN %s", path)) > 1024)
+   if ((len = snprintf(buff, 1023, "zMULTISCAN %s", path)) < 0)
+      return(-1);
+   if (len > 1023)
    {
-      clamavc_disconnect(clamp);
       errno = ENOBUFS;
       return(-1);
    };
+   buff[len] = '\0';
+   nbyte = len + 1;
 
    if (clamp->verbose > 1)
       printf(">>> %s\n", buff);
 
-   if ((len = write(clamp->s, buff, len+1)) == -1)
+   if ((len = write(clamp->s, buff, nbyte)) == -1)
    {
       clamavc_disconnect(clamp);
       return(-1);
@@ -571,11 +580,12 @@ int32_t clamavc_ping(CLAMAVC * clamp)
 /// @param[in]  clamp    pointer to ClamAV Client session data
 /// @param[out] dst      pointer to read buffer
 /// @param[in]  len      length of read buffer
-int32_t clamavc_read(CLAMAVC * clamp, char * dst, ssize_t len)
+int32_t clamavc_read(CLAMAVC * clamp, char * dst, size_t nbyte)
 {
-   ssize_t pos;
-   ssize_t added;
-   ssize_t offset;
+   size_t    pos;
+   ssize_t  added;
+   size_t   offset;
+   size_t   len;
 
    if (!(clamp))
    {
@@ -586,7 +596,7 @@ int32_t clamavc_read(CLAMAVC * clamp, char * dst, ssize_t len)
    pos   = 0;
    added = 0;
 
-   if ((added = read(clamp->s, &dst[pos], len-pos-1)) == -1)
+   if ((added = read(clamp->s, &dst[pos], nbyte-pos-1)) == -1)
       return(-1);
    pos += added;
    dst[pos] = '\0';
@@ -596,15 +606,15 @@ int32_t clamavc_read(CLAMAVC * clamp, char * dst, ssize_t len)
 
    while(dst[pos-1])
    {
-      if ((added = read(clamp->s, &dst[pos], len-pos-1)) == -1)
+      if ((added = read(clamp->s, &dst[pos], nbyte-pos-1)) == -1)
          return(-1);
       pos += added;
-      dst[pos] = '\0';
-      if (pos >= (len-1))
+      if (pos >= (nbyte-1))
       {
          errno = ENOBUFS;
          return(-1);
       };
+      dst[pos] = '\0';
    };
    len = pos;
 
@@ -674,21 +684,26 @@ int32_t clamavc_scan(CLAMAVC * clamp, const char * path)
 {
    char    buff[1024];
    ssize_t len;
-   ssize_t offset;
+   size_t  offset;
+   size_t  nbyte;
 
    if (clamavc_connect(clamp, 1))
       return(-1);
 
-   if ((len = snprintf(buff, 1024, "zSCAN %s", path)) > 1024)
+   if ((len = snprintf(buff, 1023, "zSCAN %s", path)) < 0)
+      return(-1);
+   if (len > 1023)
    {
       errno = ENOBUFS;
       return(-1);
    };
+   buff[len] = '\0';
+   nbyte = len + 1;
 
    if (clamp->verbose > 1)
       printf(">>> %s\n", buff);
 
-   if ((len = write(clamp->s, buff, len+1)) == -1)
+   if ((len = write(clamp->s, buff, nbyte)) == -1)
    {
       clamavc_disconnect(clamp);
       return(-1);
