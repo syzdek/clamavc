@@ -34,8 +34,7 @@ DIST_SUBDIRS				=
 AM_LDFLAGS				= -L$(builddir)/lib
 AM_LIBS					=
 AM_CFLAGS				= -O2 $(CFLAGS_WARNINGS)
-AM_CPPFLAGS				= -I$(top_srcdir)/include \
-					  -I$(top_builddir)/include
+AM_CPPFLAGS				= -I$(top_srcdir)/lib
 AM_LIBTOOLFLAGS				=
 ACLOCAL_AMFLAGS				= -I m4
 DEFS					= @DEFS@
@@ -48,7 +47,7 @@ noinst_PROGRAMS				= src/clamavc-contscan \
 					  src/clamavc-reload \
 					  src/clamavc-scan \
 					  src/clamavc-shutdown
-include_HEADERS				= include/clamavc.h
+include_HEADERS				= lib/clamavc.h
 lib_LTLIBRARIES				= lib/libclamavc.la
 man_MANS				=
 
@@ -70,7 +69,7 @@ lib_libclamavc_la_LDFLAGS		= -rpath '$(libdir)' \
 					  -version-info $(LIB_VERSION_INFO) \
 					  $(AM_LDFLAGS) \
 					  -export-symbols $(srcdir)/lib/libclamavc.sym
-lib_libclamavc_la_SOURCES		= include/clamavc.h lib/libclamavc.c
+lib_libclamavc_la_SOURCES		= lib/clamavc.h lib/libclamavc.c
 
 
 # macros for src/clamavc-contscan
@@ -79,7 +78,7 @@ src_clamavc_contscan_CPPFLAGS		= -DPROGRAM_NAME="\"clamavc-contscan\"" $(AM_CPPF
 src_clamavc_contscan_CFLAGS		= $(AM_CFLAGS)
 src_clamavc_contscan_LDFLAGS		= $(AM_LDFLAGS)
 src_clamavc_contscan_LDADD		= $(AM_LDADD) lib/libclamavc.la
-src_clamavc_contscan_SOURCES		= include/clamavc.h \
+src_clamavc_contscan_SOURCES		= lib/clamavc.h \
 					  src/clamavc-common.c \
 					  src/clamavc-common.h \
 					  src/clamavc-contscan.c
@@ -91,7 +90,7 @@ src_clamavc_instream_CPPFLAGS		= -DPROGRAM_NAME="\"clamavc-instream\"" $(AM_CPPF
 src_clamavc_instream_CFLAGS		= $(AM_CFLAGS)
 src_clamavc_instream_LDFLAGS		= $(AM_LDFLAGS)
 src_clamavc_instream_LDADD		= $(AM_LDADD) lib/libclamavc.la
-src_clamavc_instream_SOURCES		= include/clamavc.h \
+src_clamavc_instream_SOURCES		= lib/clamavc.h \
 					  src/clamavc-common.c \
 					  src/clamavc-common.h \
 					  src/clamavc-instream.c
@@ -103,7 +102,7 @@ src_clamavc_multiscan_CPPFLAGS		= -DPROGRAM_NAME="\"clamavc-multiscan\"" $(AM_CP
 src_clamavc_multiscan_CFLAGS		= $(AM_CFLAGS)
 src_clamavc_multiscan_LDFLAGS		= $(AM_LDFLAGS)
 src_clamavc_multiscan_LDADD		= $(AM_LDADD) lib/libclamavc.la
-src_clamavc_multiscan_SOURCES		= include/clamavc.h \
+src_clamavc_multiscan_SOURCES		= lib/clamavc.h \
 					  src/clamavc-common.c \
 					  src/clamavc-common.h \
 					  src/clamavc-multiscan.c
@@ -115,7 +114,7 @@ src_clamavc_reload_CPPFLAGS		= -DPROGRAM_NAME="\"clamavc-reload\"" $(AM_CPPFLAGS
 src_clamavc_reload_CFLAGS		= $(AM_CFLAGS)
 src_clamavc_reload_LDFLAGS		= $(AM_LDFLAGS)
 src_clamavc_reload_LDADD		= $(AM_LDADD) lib/libclamavc.la
-src_clamavc_reload_SOURCES		= include/clamavc.h \
+src_clamavc_reload_SOURCES		= lib/clamavc.h \
 					  src/clamavc-common.c \
 					  src/clamavc-common.h \
 					  src/clamavc-reload.c
@@ -127,7 +126,7 @@ src_clamavc_scan_CPPFLAGS		= -DPROGRAM_NAME="\"clamavc-scan\"" $(AM_CPPFLAGS)
 src_clamavc_scan_CFLAGS			= $(AM_CFLAGS)
 src_clamavc_scan_LDFLAGS		= $(AM_LDFLAGS)
 src_clamavc_scan_LDADD			= $(AM_LDADD) lib/libclamavc.la
-src_clamavc_scan_SOURCES		= include/clamavc.h \
+src_clamavc_scan_SOURCES		= lib/clamavc.h \
 					  src/clamavc-common.c \
 					  src/clamavc-common.h \
 					  src/clamavc-scan.c
@@ -139,7 +138,7 @@ src_clamavc_shutdown_CPPFLAGS		= -DPROGRAM_NAME="\"clamavc-shutdown\"" $(AM_CPPF
 src_clamavc_shutdown_CFLAGS		= $(AM_CFLAGS)
 src_clamavc_shutdown_LDFLAGS		= $(AM_LDFLAGS)
 src_clamavc_shutdown_LDADD		= $(AM_LDADD) lib/libclamavc.la
-src_clamavc_shutdown_SOURCES		= include/clamavc.h \
+src_clamavc_shutdown_SOURCES		= lib/clamavc.h \
 					  src/clamavc-common.c \
 					  src/clamavc-common.h \
 					  src/clamavc-shutdown.c
