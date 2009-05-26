@@ -23,8 +23,8 @@
 /**
  *  @file examples/clamavc-common.h common functions for examples
  */
+#ifndef _CLAMAVC_SRC_CLAMAVC_COMMON_H
 #define _CLAMAVC_SRC_CLAMAVC_COMMON_H 1
-
 
 ///////////////
 //           //
@@ -95,4 +95,4 @@ void usage PARAMS((void));
 void version PARAMS((void));
 
 
-/* end of source code */
+#endif /* end of source code */
