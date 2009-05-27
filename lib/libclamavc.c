@@ -388,7 +388,16 @@ uint32_t clamavc_hton(uint32_t host, size_t width)
 /// initialize ClamAV client library session
 CLAMAVC * clamavc_initialize(void)
 {
-   CLAMAVC * clamp;
+   const char  * host;
+   char        * data[10];
+   CLAMAVC     * clamp;
+   enum          env_vars
+   {
+      HOST,
+      PORT,
+      STREAMMAXLEN,
+      VERBOSE
+   };
 
    if (!(clamp = malloc(sizeof(CLAMAVC))))
    {
@@ -397,11 +406,19 @@ CLAMAVC * clamavc_initialize(void)
    };
    memset(clamp, 0, sizeof(CLAMAVC));
 
-   // applies defaults
-   clamp->s            = -1;
-   clamp->port         = CLAMAVC_PORT;
-   clamp->streamMaxLen = CLAMAVC_STREAMMAXLEN;
-   if (!(clamp->host = strdup(CLAMAVC_HOST)))
+   // applies defaults and values from environment variables
+   data[PORT]            = getenv("CLAMAVC_PORT");
+   data[STREAMMAXLEN]    = getenv("CLAMAVC_STREAMMAXLEN");
+   data[VERBOSE]         = getenv("CLAMAVC_VERBOSE");
+   data[HOST]            = getenv("CLAMAVC_HOST");
+   clamp->s              = -1;
+   clamp->port           = data[PORT]          ? strtoul(data[PORT], NULL, 0)          : CLAMAVC_PORT;
+   clamp->streamMaxLen   = data[STREAMMAXLEN]  ? strtoul(data[STREAMMAXLEN], NULL, 0)  : CLAMAVC_STREAMMAXLEN;
+   clamp->verbose        = data[VERBOSE]       ? strtoul(data[VERBOSE], NULL, 0)       : CLAMAVC_VERBOSE;
+   host                  = data[HOST]          ? data[HOST]                            : CLAMAVC_HOST;
+
+   // save host name to data struct
+   if (!(clamp->host = strdup(host)))
    {
       errno = ENOMEM;
       clamavc_close(clamp);

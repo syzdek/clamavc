@@ -123,6 +123,7 @@
 #define CLAMAVC_PORT               3310
 #define CLAMAVC_SOCKET             NULL
 #define CLAMAVC_STREAMMAXLEN       4096
+#define CLAMAVC_VERBOSE            0
 
 // ClamAV Client options
 #define CLAMAVC_OHOST              0x01
