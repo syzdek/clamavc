@@ -54,6 +54,7 @@ noinst_PROGRAMS				= src/clamavc-contscan \
 check_PROGRAMS				= tests/connect \
 					  tests/contscan-clean \
 					  tests/contscan-infected \
+					  tests/multiscan \
 					  tests/ping \
 					  tests/reload \
 					  tests/version
@@ -177,6 +178,14 @@ tests_contscan_infected_LDADD		= $(AM_LDADD) lib/libclamavc.la
 tests_contscan_infected_SOURCES		= tests/common.c \
 					  tests/common.h \
 					  tests/contscan-infected.c
+
+
+# macros for tests/multiscan
+tests_multiscan_DEPENDENCIES		= Makefile lib/libclamavc.la $(noinst_DATA)
+tests_multiscan_LDADD			= $(AM_LDADD) lib/libclamavc.la
+tests_multiscan_SOURCES			= tests/common.c \
+					  tests/common.h \
+					  tests/multiscan.c
 
 
 # macros for tests/ping
