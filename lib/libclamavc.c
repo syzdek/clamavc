@@ -342,7 +342,12 @@ int32_t clamavc_contscan(CLAMAVC * clamp, const char * path)
       printf("<== %s\n", &buff[offset]);
 
    if (!(strcmp(&buff[offset], "OK")))
+   {
+      clamavc_reset(clamp);
       return(0);
+   };
+
+   clamavc_reset(clamp);
 
    return(1);
 }
