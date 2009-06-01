@@ -55,7 +55,9 @@ check_PROGRAMS				= tests/connect \
 					  tests/contscan-clean \
 					  tests/contscan-infected \
 					  tests/instream \
+					  tests/instream-chunked \
 					  tests/instream-file \
+					  tests/instream-file-chunked \
 					  tests/multiscan \
 					  tests/ping \
 					  tests/reload \
@@ -191,12 +193,28 @@ tests_instream_SOURCES			= tests/common.c \
 					  tests/instream.c
 
 
+# macros for tests/instream-chunked
+tests_instream_chunked_DEPENDENCIES	= Makefile lib/libclamavc.la $(EXTRA_DATA)
+tests_instream_chunked_LDADD		= $(AM_LDADD) lib/libclamavc.la
+tests_instream_chunked_SOURCES		= tests/common.c \
+					  tests/common.h \
+					  tests/instream-chunked.c
+
+
 # macros for tests/instream-file
 tests_instream_file_DEPENDENCIES	= Makefile lib/libclamavc.la $(EXTRA_DATA)
 tests_instream_file_LDADD		= $(AM_LDADD) lib/libclamavc.la
 tests_instream_file_SOURCES		= tests/common.c \
 					  tests/common.h \
 					  tests/instream-file.c
+
+
+# macros for tests/instream-file-chunked
+tests_instream_file_chunked_DEPENDENCIES = Makefile lib/libclamavc.la $(EXTRA_DATA)
+tests_instream_file_chunked_LDADD	= $(AM_LDADD) lib/libclamavc.la
+tests_instream_file_chunked_SOURCES	= tests/common.c \
+					  tests/common.h \
+					  tests/instream-file-chunked.c
 
 
 # macros for tests/multiscan
