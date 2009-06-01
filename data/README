@@ -1,7 +1,7 @@
 This directory contains data files for testing ClamAV.  The bits of the
 ".bin" files have been inverted to prevent the files from triggering
 anti-virus scanners. The file "infected.tar.gz.bin" contains the eicar
-test virus. The file "non-infected.tar.gz.bin" does not contain a virus.
+test virus. The file "clean.tar.gz.bin" does not contain a virus.
 
 The utility "invert-file" can be used convert the ".bin" files into valid
 tar files.

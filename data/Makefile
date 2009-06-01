@@ -23,23 +23,27 @@
 #   Makefile - automate compiling on a unix platform
 #
 
-all: eicar-test.txt invert-file infected.tar.gz non-infected.tar.gz
+all: clean.tar.gz clean.txt infected.tar.gz infected.txt invert-file
 
-invert-file: invert-file.c
+clean.tar.gz: invert-file clean.tar.gz.bin
+	./invert-file clean.tar.gz.bin clean.tar.gz
 
-eicar-test.txt: invert-file eicar-test.txt.bin
-	./invert-file eicar-test.txt.bin eicar-test.txt
+clean.txt: invert-file clean.txt.bin
+	./invert-file clean.txt.bin clean.txt
 
 infected.tar.gz: invert-file infected.tar.gz.bin
 	./invert-file infected.tar.gz.bin infected.tar.gz
 
-non-infected.tar.gz: invert-file non-infected.tar.gz.bin
-	./invert-file non-infected.tar.gz.bin non-infected.tar.gz
+infected.txt: invert-file infected.txt.bin
+	./invert-file infected.txt.bin infected.txt
+
+invert-file: invert-file.c
 
 clean:
-	rm -f eicar-test.txt
-	rm -f invert-file
 	rm -f infected.tar.gz
-	rm -f non-infected.tar.gz
+	rm -f infected.txt
+	rm -f invert-file *.o
+	rm -f clean.tar.gz
+	rm -f clean.txt
 
 # end of Makefile
