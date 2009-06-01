@@ -55,6 +55,7 @@ check_PROGRAMS				= tests/connect \
 					  tests/contscan-clean \
 					  tests/contscan-infected \
 					  tests/ping \
+					  tests/reload \
 					  tests/version
 include_HEADERS				= lib/clamavc.h
 lib_LTLIBRARIES				= lib/libclamavc.la
@@ -184,6 +185,14 @@ tests_ping_LDADD			= $(AM_LDADD) lib/libclamavc.la
 tests_ping_SOURCES			= tests/common.c \
 					  tests/common.h \
 					  tests/ping.c
+
+
+# macros for tests/reload
+tests_reload_DEPENDENCIES		= Makefile lib/libclamavc.la
+tests_reload_LDADD			= $(AM_LDADD) lib/libclamavc.la
+tests_reload_SOURCES			= tests/common.c \
+					  tests/common.h \
+					  tests/reload.c
 
 
 # macros for tests/version
