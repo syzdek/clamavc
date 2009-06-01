@@ -114,6 +114,12 @@ int config(CLAMAVC ** clampp)
       clamd_socket = 0;
    };
 
+   if ((str = getenv("CLAMAVC_REMOTE")))
+   {
+      clamd_remote = 1;
+      clamd_socket = 0;
+   };
+
    *clampp = clamp;
 
    return(0);
