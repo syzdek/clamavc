@@ -587,6 +587,8 @@ int32_t clamavc_multiscan(CLAMAVC * clamp, const char * path)
       return(0);
    };
 
+   clamavc_reset(clamp);
+
    return(1);
 }
 
