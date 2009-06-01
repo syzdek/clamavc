@@ -540,42 +540,44 @@ int32_t clamavc_instream(CLAMAVC * clamp, const char * src, size_t nbyte)
 }
 
 
+/// sends file opened with file handle as chuncked data to the server
+/// @param[in]  clamp    pointer to ClamAV Client session data
+/// @param[in]  file     file to scan
+int32_t clamavc_instream_fildes(CLAMAVC * clamp, int fildes)
+{
+   int            len;
+   char           buff[1024];
+
+   if (lseek(fildes, (off_t)0, SEEK_SET) == -1)
+      return(-1);
+
+   while((len = read(fildes, buff, 1024)) > 0)
+      if (clamavc_instream(clamp, buff, (unsigned)len))
+         return(-1);
+
+   if (len == -1)
+      return(-1);
+
+   return(clamavc_instream(clamp, NULL, 0));
+}
+
+
 /// sends file as chuncked data to the server
 /// @param[in]  clamp    pointer to ClamAV Client session data
 /// @param[in]  file     file to scan
 int32_t clamavc_instream_file(CLAMAVC * clamp, const char * file)
 {
    int            fd;
-   int            len;
    int32_t        err;
-   char           buff[1024];
-
-   if (clamavc_connect(clamp, 1))
-   {
-      clamp->instream = 0;
-      return(-1);
-   };
 
    if ((fd = open(file, O_RDONLY)) == -1)
       return(-1);
 
-   while((len = read(fd, buff, 1024)) > 0)
-   {
-      if ((err = clamavc_instream(clamp, buff, (unsigned)len)) == -1)
-      {
-         close(fd);
-         return(-1);
-      };
-   };
-   if (len == -1)
-   {
-      close(fd);
-      return(-1);
-   };
+   err = clamavc_instream_fildes(clamp, fd);
 
    close(fd);
 
-   return(clamavc_instream(clamp, NULL, 0));
+   return(err);
 }
 
 
