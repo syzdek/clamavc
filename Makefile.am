@@ -41,12 +41,21 @@ DEFS					= @DEFS@
 
 
 # items to build
+noinst_DATA				= data/clean.txt \
+					  data/clean.tar.gz \
+					  data/infected.tar.gz \
+					  data/infected.txt
 noinst_PROGRAMS				= src/clamavc-contscan \
 					  src/clamavc-instream \
 					  src/clamavc-multiscan \
 					  src/clamavc-reload \
 					  src/clamavc-scan \
 					  src/clamavc-shutdown
+check_PROGRAMS				= tests/connect \
+					  tests/contscan-clean \
+					  tests/contscan-infected \
+					  tests/ping \
+					  tests/version
 include_HEADERS				= lib/clamavc.h
 lib_LTLIBRARIES				= lib/libclamavc.la
 man_MANS				=
@@ -144,6 +153,47 @@ src_clamavc_shutdown_SOURCES		= lib/clamavc.h \
 					  src/clamavc-shutdown.c
 
 
+
+# macros for tests/connect
+tests_connect_DEPENDENCIES		= Makefile lib/libclamavc.la
+tests_connect_LDADD			= $(AM_LDADD) lib/libclamavc.la
+tests_connect_SOURCES			= tests/common.c \
+					  tests/common.h \
+					  tests/connect.c
+
+
+# macros for tests/contscan-clean
+tests_contscan_clean_DEPENDENCIES	= Makefile lib/libclamavc.la $(noinst_DATA)
+tests_contscan_clean_LDADD		= $(AM_LDADD) lib/libclamavc.la
+tests_contscan_clean_SOURCES		= tests/common.c \
+					  tests/common.h \
+					  tests/contscan-clean.c
+
+
+# macros for tests/contscan-infected
+tests_contscan_infected_DEPENDENCIES	= Makefile lib/libclamavc.la $(noinst_DATA)
+tests_contscan_infected_LDADD		= $(AM_LDADD) lib/libclamavc.la
+tests_contscan_infected_SOURCES		= tests/common.c \
+					  tests/common.h \
+					  tests/contscan-infected.c
+
+
+# macros for tests/ping
+tests_ping_DEPENDENCIES			= Makefile lib/libclamavc.la
+tests_ping_LDADD			= $(AM_LDADD) lib/libclamavc.la
+tests_ping_SOURCES			= tests/common.c \
+					  tests/common.h \
+					  tests/ping.c
+
+
+# macros for tests/version
+tests_version_DEPENDENCIES		= Makefile lib/libclamavc.la
+tests_version_LDADD			= $(AM_LDADD) lib/libclamavc.la
+tests_version_SOURCES			= tests/common.c \
+					  tests/common.h \
+					  tests/version.c
+
+
 # miscellaneous lists
 CLEANFILES				= $(builddir)/a.out   $(srcdir)/a.out \
 					  $(builddir)/*/a.out $(srcdir)/*/a.out \
@@ -153,18 +203,23 @@ CLEANFILES				= $(builddir)/a.out   $(srcdir)/a.out \
 					  $(man_MANS) \
 					  @PACKAGE_TARNAME@-*.tar.* \
 					  @PACKAGE_TARNAME@-*.zip \
+					  $(noinst_DATA) \
 					  $(EXTRA_PROGRAMS)
 EXTRA_DIST				= data/Makefile \
 					  data/README \
-					  data/eicar-test.txt.bin \
+					  data/clean.tar.gz.bin \
+					  data/clean.txt.bin \
+					  data/infected.txt.bin \
 					  data/infected.tar.gz.bin \
-					  data/invert-file.c \
-					  data/non-infected.tar.gz.bin \
 					  lib/libclamavc.sym
 EXTRA_PROGRAMS				= data/invert-file
 EXTRA_TEXINFOS				=
-TESTS					=
+TESTS					= $(check_PROGRAMS)
 XFAIL_TESTS				=
+TESTS_ENVIRONMENT			= ABS_TOP_BUILDDIR=$(abs_top_builddir) \
+					  ABS_TOP_SRCDIR=$(abs_top_srcdir) \
+					  CLAMD_HOST=$(clamd_host) \
+					  CLAMD_PORT=$(clamd_port)
 
 
 # substitution routine
@@ -195,31 +250,33 @@ do_subst_dt = \
 
 
 # custom targets
-.PHONY: data
+.PHONY: testdata
 
-data: data/eicar-test.txt data/infected.tar.gz data/non-infected.tar.gz
+testdata: $(noinst_DATA)
 
-data/eicar-test.txt: Makefile data/invert-file $(srcdir)/data/eicar-test.txt.bin
+data/clean.tar.gz: Makefile data/invert-file $(srcdir)/data/clean.tar.gz.bin
 	mkdir -p data
-	./data/invert-file $(srcdir)/data/eicar-test.txt.bin \
-		data/eicar-test.txt
+	./data/invert-file $(srcdir)/data/clean.tar.gz.bin \
+		data/clean.tar.gz
+
+data/clean.txt: Makefile data/invert-file $(srcdir)/data/clean.txt.bin
+	mkdir -p data
+	./data/invert-file $(srcdir)/data/clean.txt.bin \
+		data/clean.txt
+		
+data/infected.txt: Makefile data/invert-file $(srcdir)/data/infected.txt.bin
+	mkdir -p data
+	./data/invert-file $(srcdir)/data/infected.txt.bin \
+		data/infected.txt
 
 data/infected.tar.gz: Makefile data/invert-file $(srcdir)/data/infected.tar.gz.bin
 	mkdir -p data
 	./data/invert-file $(srcdir)/data/infected.tar.gz.bin \
 		data/infected.tar.gz
 
-data/non-infected.tar.gz: Makefile data/invert-file $(srcdir)/data/non-infected.tar.gz.bin
-	mkdir -p data
-	./data/invert-file $(srcdir)/data/non-infected.tar.gz.bin \
-		data/non-infected.tar.gz
-
 
 # local targets
 clean-local:
-	rm -f data/eicar-test.txt
-	rm -f data/infected.tar.gz
-	rm -f data/non-infected.tar.gz
 
 distclean-local:
 	-rm -fR $(srcdir)/autom4te.cache	# removes autoconf cache
