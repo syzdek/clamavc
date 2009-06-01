@@ -89,9 +89,6 @@ extern char infected_file[1024];
 // processed command line options
 int config PARAMS((CLAMAVC ** clampp));
 
-// connects to remote ClamAV daemon
-int32_t clamavc_connect PARAMS((CLAMAVC * clamp, unsigned idsess));
-
 // main statement
 int main PARAMS((void));
 

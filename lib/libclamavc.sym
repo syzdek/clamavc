@@ -40,7 +40,6 @@
 #      libtool --mode=clean rm -f libclamavc.la libclamavc.lo
 #
 clamavc_close
-clamavc_connect
 clamavc_contscan
 clamavc_initialize
 clamavc_instream

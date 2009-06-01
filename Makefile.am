@@ -51,8 +51,7 @@ noinst_PROGRAMS				= src/clamavc-contscan \
 					  src/clamavc-reload \
 					  src/clamavc-scan \
 					  src/clamavc-shutdown
-check_PROGRAMS				= tests/connect \
-					  tests/contscan-clean \
+check_PROGRAMS				= tests/contscan-clean \
 					  tests/contscan-infected \
 					  tests/instream \
 					  tests/instream-chunked \
@@ -160,15 +159,6 @@ src_clamavc_shutdown_SOURCES		= lib/clamavc.h \
 					  src/clamavc-common.c \
 					  src/clamavc-common.h \
 					  src/clamavc-shutdown.c
-
-
-
-# macros for tests/connect
-tests_connect_DEPENDENCIES		= Makefile lib/libclamavc.la
-tests_connect_LDADD			= $(AM_LDADD) lib/libclamavc.la
-tests_connect_SOURCES			= tests/common.c \
-					  tests/common.h \
-					  tests/connect.c
 
 
 # macros for tests/contscan-clean
