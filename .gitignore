@@ -1,0 +1,12 @@
+*.la
+*.lo
+*.o
+.DS_Store
+/.libs/
+/ClamAV Client.xcodeproj/
+/Makefile.in
+/aclocal.m4
+/autom4te.cache/
+/build/
+/config.h.in
+/configure
