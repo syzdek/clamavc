@@ -57,6 +57,7 @@ check_PROGRAMS				= tests/connect \
 					  tests/multiscan \
 					  tests/ping \
 					  tests/reload \
+					  tests/scan \
 					  tests/version
 include_HEADERS				= lib/clamavc.h
 lib_LTLIBRARIES				= lib/libclamavc.la
@@ -202,6 +203,14 @@ tests_reload_LDADD			= $(AM_LDADD) lib/libclamavc.la
 tests_reload_SOURCES			= tests/common.c \
 					  tests/common.h \
 					  tests/reload.c
+
+
+# macros for tests/scan
+tests_scan_DEPENDENCIES			= Makefile lib/libclamavc.la
+tests_scan_LDADD			= $(AM_LDADD) lib/libclamavc.la
+tests_scan_SOURCES			= tests/common.c \
+					  tests/common.h \
+					  tests/scan.c
 
 
 # macros for tests/version
