@@ -528,6 +528,47 @@ int32_t clamavc_instream(CLAMAVC * clamp, const char * src, size_t nbyte)
 }
 
 
+/// sends file as chuncked data to the server
+/// @param[in]  clamp    pointer to ClamAV Client session data
+/// @param[in]  file     file to scan
+int32_t clamavc_instream_file(CLAMAVC * clamp, const char * file)
+{
+   int            fd;
+   int            len;
+   int32_t        err;
+   char           buff[4096];
+
+   if (clamavc_connect(clamp, 0))
+   {
+      clamp->instream = 0;
+      return(-1);
+   };
+
+   if ((fd = open(file, O_RDONLY)) == -1)
+      return(-1);
+
+   while((len = read(fd, buff, 4096)) > 0)
+   {
+      if ((err = clamavc_instream(clamp, buff, (unsigned)len)) == -1)
+      {
+         close(fd);
+         return(-1);
+      };
+   };
+   if (len == -1)
+   {
+      close(fd);
+      return(-1);
+   };
+
+   close(fd);
+
+   return(clamavc_instream(clamp, NULL, 0));
+
+   return(0);
+}
+
+
 /// recursively scans a directory using multiple threads
 /// @param[in]  clamp    pointer to ClamAV Client session data
 /// @param[in]  path     directory path to scan
