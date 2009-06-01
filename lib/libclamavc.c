@@ -177,12 +177,16 @@ int32_t clamavc_connect(CLAMAVC * clamp, unsigned idsess)
             if (clamp->verbose > 1)
                printf(">>> zIDSESSION\n");
             if ((write(s, "zIDSESSION", 11)) == -1)
+            {
+               close(s);
                return(-1);
+            };
          };
          clamp->idsess = idsess;
          clamp->s = s;
          return(0);
       };
+      close(s);
       return(-1);
    };
 #endif
@@ -222,7 +226,10 @@ int32_t clamavc_connect(CLAMAVC * clamp, unsigned idsess)
                if (clamp->verbose > 1)
                   printf(">>> zIDSESSION\n");
                if ((write(s, "zIDSESSION", 11)) == -1)
+               {
+                  close(s);
                   return(-1);
+               };
             };
             clamp->idsess = idsess;
             clamp->s = s;
@@ -271,7 +278,10 @@ int32_t clamavc_connect(CLAMAVC * clamp, unsigned idsess)
                if (clamp->verbose > 1)
                   printf(">>> zIDSESSION\n");
                if ((write(s, "zIDSESSION", 11)) == -1)
+               {
+                  close(s);
                   return(-1);
+               };
             };
             clamp->idsess = idsess;
             clamp->s = s;
