@@ -41,7 +41,7 @@ DEFS					= @DEFS@
 
 
 # items to build
-noinst_DATA				= data/clean.txt \
+EXTRA_DATA				= data/clean.txt \
 					  data/clean.tar.gz \
 					  data/infected.tar.gz \
 					  data/infected.txt
@@ -167,7 +167,7 @@ tests_connect_SOURCES			= tests/common.c \
 
 
 # macros for tests/contscan-clean
-tests_contscan_clean_DEPENDENCIES	= Makefile lib/libclamavc.la $(noinst_DATA)
+tests_contscan_clean_DEPENDENCIES	= Makefile lib/libclamavc.la $(EXTRA_DATA)
 tests_contscan_clean_LDADD		= $(AM_LDADD) lib/libclamavc.la
 tests_contscan_clean_SOURCES		= tests/common.c \
 					  tests/common.h \
@@ -175,7 +175,7 @@ tests_contscan_clean_SOURCES		= tests/common.c \
 
 
 # macros for tests/contscan-infected
-tests_contscan_infected_DEPENDENCIES	= Makefile lib/libclamavc.la $(noinst_DATA)
+tests_contscan_infected_DEPENDENCIES	= Makefile lib/libclamavc.la $(EXTRA_DATA)
 tests_contscan_infected_LDADD		= $(AM_LDADD) lib/libclamavc.la
 tests_contscan_infected_SOURCES		= tests/common.c \
 					  tests/common.h \
@@ -183,7 +183,7 @@ tests_contscan_infected_SOURCES		= tests/common.c \
 
 
 # macros for tests/instream-file
-tests_instream_file_DEPENDENCIES	= Makefile lib/libclamavc.la $(noinst_DATA)
+tests_instream_file_DEPENDENCIES	= Makefile lib/libclamavc.la $(EXTRA_DATA)
 tests_instream_file_LDADD		= $(AM_LDADD) lib/libclamavc.la
 tests_instream_file_SOURCES		= tests/common.c \
 					  tests/common.h \
@@ -191,7 +191,7 @@ tests_instream_file_SOURCES		= tests/common.c \
 
 
 # macros for tests/multiscan
-tests_multiscan_DEPENDENCIES		= Makefile lib/libclamavc.la $(noinst_DATA)
+tests_multiscan_DEPENDENCIES		= Makefile lib/libclamavc.la $(EXTRA_DATA)
 tests_multiscan_LDADD			= $(AM_LDADD) lib/libclamavc.la
 tests_multiscan_SOURCES			= tests/common.c \
 					  tests/common.h \
@@ -215,7 +215,7 @@ tests_reload_SOURCES			= tests/common.c \
 
 
 # macros for tests/scan
-tests_scan_DEPENDENCIES			= Makefile lib/libclamavc.la
+tests_scan_DEPENDENCIES			= Makefile lib/libclamavc.la $(EXTRA_DATA)
 tests_scan_LDADD			= $(AM_LDADD) lib/libclamavc.la
 tests_scan_SOURCES			= tests/common.c \
 					  tests/common.h \
@@ -239,7 +239,7 @@ CLEANFILES				= $(builddir)/a.out   $(srcdir)/a.out \
 					  $(man_MANS) \
 					  @PACKAGE_TARNAME@-*.tar.* \
 					  @PACKAGE_TARNAME@-*.zip \
-					  $(noinst_DATA) \
+					  $(EXTRA_DATA) \
 					  $(EXTRA_PROGRAMS)
 EXTRA_DIST				= data/Makefile \
 					  data/README \
@@ -288,7 +288,7 @@ do_subst_dt = \
 # custom targets
 .PHONY: testdata
 
-testdata: $(noinst_DATA)
+testdata: $(EXTRA_DATA)
 
 data/clean.tar.gz: Makefile data/invert-file $(srcdir)/data/clean.tar.gz.bin
 	mkdir -p data
