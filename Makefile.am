@@ -63,7 +63,8 @@ check_PROGRAMS				= tests/contscan-clean \
 					  tests/ping \
 					  tests/reload \
 					  tests/scan \
-					  tests/version
+					  tests/version \
+					  tests/idsession-all
 include_HEADERS				= lib/clamavc.h
 lib_LTLIBRARIES				= lib/libclamavc.la
 man_MANS				=
@@ -175,6 +176,14 @@ tests_contscan_infected_LDADD		= $(AM_LDADD) lib/libclamavc.la
 tests_contscan_infected_SOURCES		= tests/common.c \
 					  tests/common.h \
 					  tests/contscan-infected.c
+
+
+# macros for tests/idsession-all
+tests_idsession_all_DEPENDENCIES	= Makefile lib/libclamavc.la $(EXTRA_DATA)
+tests_idsession_all_LDADD		= $(AM_LDADD) lib/libclamavc.la
+tests_idsession_all_SOURCES		= tests/common.c \
+					  tests/common.h \
+					  tests/idsession-all.c
 
 
 # macros for tests/instream
