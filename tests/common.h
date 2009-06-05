@@ -37,6 +37,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <fcntl.h>
 
 
 ///////////////////
@@ -88,6 +89,12 @@ extern char infected_file[1024];
 
 // processed command line options
 int config PARAMS((CLAMAVC ** clampp));
+
+// sends file as chuncked data to the server
+int32_t instream_fildes PARAMS((CLAMAVC * clamp, const char * file));
+
+// sends file as chuncked data to the server
+int32_t instream_file PARAMS((CLAMAVC * clamp, const char * file));
 
 // main statement
 int main PARAMS((void));

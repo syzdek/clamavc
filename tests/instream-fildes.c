@@ -26,49 +26,11 @@
 #define _CLAMAVC_TESTS_INSTREAM_FILDES_C 1
 #include "common.h"
 
-///////////////
-//           //
-//  Headers  //
-//           //
-///////////////
-
-#include <fcntl.h>
-
-
-//////////////////
-//              //
-//  Prototypes  //
-//              //
-//////////////////
-
-// sends file as chuncked data to the server
-int32_t instream_fildes PARAMS((CLAMAVC * clamp, const char * file));
-
-
 /////////////////
 //             //
 //  Functions  //
 //             //
 /////////////////
-
-/// sends file as chuncked data to the server
-/// @param[in]  clamp    pointer to ClamAV Client session data
-/// @param[in]  file     file to scan
-int32_t instream_fildes(CLAMAVC * clamp, const char * file)
-{
-   int            fd;
-   int32_t        err;
-
-   if ((fd = open(file, O_RDONLY)) == -1)
-      return(-1);
-
-   err = clamavc_instream_fildes(clamp, fd);
-
-   close(fd);
-
-   return(err);
-}
-
 
 /// main statement
 int main (void)
