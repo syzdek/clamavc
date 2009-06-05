@@ -31,7 +31,10 @@
 //           //
 ///////////////
 
+#ifndef _CLAMAVC_H
 #include <clamavc.h>
+#endif
+
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
