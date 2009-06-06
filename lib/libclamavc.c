@@ -56,6 +56,7 @@
 ///////////////////
 
 #define CLAMAVC_BUFF_LEN   128
+#define CLAMAVC_MSG_LEN    128
 #define CLAMAVC_VER_LEN    128
 
 #ifndef INET6_ADDRSTRLEN
@@ -80,6 +81,7 @@ struct clamavc
    unsigned    instream;     ///< INSTREAM state
    char      * host;         ///< network host running the ClamAV daemon
    char        version[CLAMAVC_VER_LEN];
+   char        msg[CLAMAVC_MSG_LEN];
 };
 
 //////////////////
