@@ -291,12 +291,12 @@ int my_config(int argc, char * argv[], MyConfig * cnfp)
             return(0);
 
          case '?':   // argument error
-            fprintf(stderr, _("Try `%s -H' for more information.\n"), PROGRAM_NAME);
+            fprintf(stderr, _("Try `%s --help' for more information.\n"), PROGRAM_NAME);
             return(-1);
 
          default:
             fprintf(stderr, _("%s: unrecognized option `--%c'\n"), PROGRAM_NAME, c);
-            fprintf(stderr, _("Try `%s -H' for more information.\n"), PROGRAM_NAME);
+            fprintf(stderr, _("Try `%s --help' for more information.\n"), PROGRAM_NAME);
             return(-1);
       };
    };
@@ -304,7 +304,7 @@ int my_config(int argc, char * argv[], MyConfig * cnfp)
    if (optind == argc)
    {
       fprintf(stderr, _("%s: missing required argument.\n"), PROGRAM_NAME);
-      fprintf(stderr, _("Try `%s -H' for more information.\n"), PROGRAM_NAME);
+      fprintf(stderr, _("Try `%s --help' for more information.\n"), PROGRAM_NAME);
       return(-1);
    };
 
@@ -522,7 +522,7 @@ void my_usage(void)
    // strings are displayed if the program is passed `-H' on the command
    // line. The two strings referenced are: PROGRAM_NAME, and
    // PACKAGE_BUGREPORT
-   printf(_("Usage: %s [options] file1 file2 ... fileN\n"
+   printf(_("Usage: %s [options] file\n"
          "  -a                        process hidden files and directories\n"
          "  -c                        continue if virus is found\n"
          "  -h host                   host name of ClamAV daemon\n"
