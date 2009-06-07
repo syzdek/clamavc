@@ -46,12 +46,6 @@ EXTRA_DATA				= data/clean.txt \
 					  data/infected.tar.gz \
 					  data/infected.txt
 bin_PROGRAMS				= src/clamavc
-noinst_PROGRAMS				= src/clamavc-contscan \
-					  src/clamavc-instream \
-					  src/clamavc-multiscan \
-					  src/clamavc-reload \
-					  src/clamavc-scan \
-					  src/clamavc-shutdown
 check_PROGRAMS				= tests/contscan-clean \
 					  tests/contscan-infected \
 					  tests/instream \
@@ -98,78 +92,6 @@ src_clamavc_CFLAGS			= $(AM_CFLAGS)
 src_clamavc_LDFLAGS			= $(AM_LDFLAGS)
 src_clamavc_LDADD			= $(AM_LDADD) lib/libclamavc.la
 src_clamavc_SOURCES			= src/clamavc.c
-
-
-# macros for src/clamavc-contscan
-src_clamavc_contscan_DEPENDENCIES	= Makefile lib/libclamavc.la
-src_clamavc_contscan_CPPFLAGS		= -DPROGRAM_NAME="\"clamavc-contscan\"" $(AM_CPPFLAGS)
-src_clamavc_contscan_CFLAGS		= $(AM_CFLAGS)
-src_clamavc_contscan_LDFLAGS		= $(AM_LDFLAGS)
-src_clamavc_contscan_LDADD		= $(AM_LDADD) lib/libclamavc.la
-src_clamavc_contscan_SOURCES		= lib/clamavc.h \
-					  src/clamavc-common.c \
-					  src/clamavc-common.h \
-					  src/clamavc-contscan.c
-
-
-# macros for src/clamavc-instream
-src_clamavc_instream_DEPENDENCIES	= Makefile lib/libclamavc.la
-src_clamavc_instream_CPPFLAGS		= -DPROGRAM_NAME="\"clamavc-instream\"" $(AM_CPPFLAGS)
-src_clamavc_instream_CFLAGS		= $(AM_CFLAGS)
-src_clamavc_instream_LDFLAGS		= $(AM_LDFLAGS)
-src_clamavc_instream_LDADD		= $(AM_LDADD) lib/libclamavc.la
-src_clamavc_instream_SOURCES		= lib/clamavc.h \
-					  src/clamavc-common.c \
-					  src/clamavc-common.h \
-					  src/clamavc-instream.c
-
-
-# macros for src/clamavc-multiscan
-src_clamavc_multiscan_DEPENDENCIES	= Makefile lib/libclamavc.la
-src_clamavc_multiscan_CPPFLAGS		= -DPROGRAM_NAME="\"clamavc-multiscan\"" $(AM_CPPFLAGS)
-src_clamavc_multiscan_CFLAGS		= $(AM_CFLAGS)
-src_clamavc_multiscan_LDFLAGS		= $(AM_LDFLAGS)
-src_clamavc_multiscan_LDADD		= $(AM_LDADD) lib/libclamavc.la
-src_clamavc_multiscan_SOURCES		= lib/clamavc.h \
-					  src/clamavc-common.c \
-					  src/clamavc-common.h \
-					  src/clamavc-multiscan.c
-
-
-# macros for src/clamavc-reload
-src_clamavc_reload_DEPENDENCIES		= Makefile lib/libclamavc.la
-src_clamavc_reload_CPPFLAGS		= -DPROGRAM_NAME="\"clamavc-reload\"" $(AM_CPPFLAGS)
-src_clamavc_reload_CFLAGS		= $(AM_CFLAGS)
-src_clamavc_reload_LDFLAGS		= $(AM_LDFLAGS)
-src_clamavc_reload_LDADD		= $(AM_LDADD) lib/libclamavc.la
-src_clamavc_reload_SOURCES		= lib/clamavc.h \
-					  src/clamavc-common.c \
-					  src/clamavc-common.h \
-					  src/clamavc-reload.c
-
-
-# macros for src/clamavc-scan
-src_clamavc_scan_DEPENDENCIES		= Makefile lib/libclamavc.la
-src_clamavc_scan_CPPFLAGS		= -DPROGRAM_NAME="\"clamavc-scan\"" $(AM_CPPFLAGS)
-src_clamavc_scan_CFLAGS			= $(AM_CFLAGS)
-src_clamavc_scan_LDFLAGS		= $(AM_LDFLAGS)
-src_clamavc_scan_LDADD			= $(AM_LDADD) lib/libclamavc.la
-src_clamavc_scan_SOURCES		= lib/clamavc.h \
-					  src/clamavc-common.c \
-					  src/clamavc-common.h \
-					  src/clamavc-scan.c
-
-
-# macros for src/clamavc-shutdown
-src_clamavc_shutdown_DEPENDENCIES	= Makefile lib/libclamavc.la
-src_clamavc_shutdown_CPPFLAGS		= -DPROGRAM_NAME="\"clamavc-shutdown\"" $(AM_CPPFLAGS)
-src_clamavc_shutdown_CFLAGS		= $(AM_CFLAGS)
-src_clamavc_shutdown_LDFLAGS		= $(AM_LDFLAGS)
-src_clamavc_shutdown_LDADD		= $(AM_LDADD) lib/libclamavc.la
-src_clamavc_shutdown_SOURCES		= lib/clamavc.h \
-					  src/clamavc-common.c \
-					  src/clamavc-common.h \
-					  src/clamavc-shutdown.c
 
 
 # macros for tests/contscan-clean
