@@ -1,0 +1,76 @@
+.\"
+.\" Clam Antivirus Client Library
+.\" Copyright (C) 2009 David M. Syzdek <david@syzdek.net>
+.\"
+.\" @ACS_LICENSE_HEADER_START@
+.\"
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 2 of the License, or
+.\" (at your option) any later version.
+.\"
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\" GNU General Public License for more details.
+.\"
+.\" You should have received a copy of the GNU General Public License along
+.\" with this program; if not, write to the Free Software Foundation, Inc.,
+.\" 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+.\"
+.\" @ACS_LICENSE_HEADER_END@
+.\"
+.\" doc/codetagger.1.in - man page for codetagger
+.\"
+.TH "CLAMAVC" "1" "June 2009" "Clam Antivirus Client" "User Commands"
+.SH NAME
+clamavc \- scans files for viruses using clamd
+.SH SYNOPSIS
+\fBclamavc\fR [\fB-acr\fR] [\fB-h\fR \fIhost\fR] [\fB-p\fR \fIport\fR] [\fB-s\fR \fIbytes\fR] [\fB--verbose\fR|\fB-v\fR] [\fIFILE\fR...]
+.sp
+\fBclamavc\fR [\fB--help\fR|\fB-H\fR] [\fB--version\fR|\fB-V\fR]
+.SH DESCRIPTION
+The \fBclamavc\fR utility reads files sequentially, scanning them for viruses
+using a remote clam antivirus daemon. The \fIFILE\fR operands are processed in command-line
+order. If \fIFILE\fR is a single dash (`-') or absent, cat reads from the
+standard input. The utility returns an exit code of zero if no errors or
+viruses are encountered.  The utility returns an exit code of one if an error
+occurs or two if a virus is detected.
+.SH OPTIONS
+.TP
+\fB\-a\fR
+Include hidden files
+.TP
+\fB\-c\fR
+continue if virus is found
+.TP
+\fB-h\fR \fIhost\fR
+sets the hostname of the clam daemon
+.TP
+\fB\-H\fR, \fB--help\fR
+Displays usage information and exits.
+.TP
+\fB-p\fR \fIport\fR
+sets the TCP port of the clam daemon
+.TP
+\fB\-q\fR, \fB--quiet\fR, \fB--silent\fR
+Suppress warnings and non-fatal error messages.
+.TP
+\fB-r\fR
+Recursively follow directories.
+.TP
+\fB-s\fR \fIbytes\fR
+sets the max chunk size of the data stream
+.TP
+\fB\-v\fR, \fB--verbose\fR
+Enable verbose output.
+.TP
+\fB\-V\fR, \fB--version\fR
+displays version number and exits.
+
+.SH "REPORTING BUGS"
+Report bugs to <clamavc-devs@lists.sourceforge.net>.
+
+.SH "SEE ALSO"
+.BR clamavc (3)
+.\" end of man page
