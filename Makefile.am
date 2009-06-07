@@ -224,7 +224,8 @@ EXTRA_DIST				= data/Makefile \
 					  data/clean.txt.bin \
 					  data/infected.txt.bin \
 					  data/infected.tar.gz.bin \
-					  lib/libclamavc.sym
+					  lib/libclamavc.sym \
+					  $(man_MANS)
 EXTRA_PROGRAMS				= data/invert-file
 EXTRA_TEXINFOS				=
 TESTS					= $(check_PROGRAMS)
