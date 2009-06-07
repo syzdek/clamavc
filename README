@@ -74,7 +74,7 @@ Preparing the source for compiling:
 
  $ cd clamavc
  $ libtoolize -c
- $ aclocal
+ $ aclocal -I m4
  $ autoheader
  $ autoconf
  $ automake -c -a
