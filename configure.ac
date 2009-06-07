@@ -27,7 +27,7 @@
 AC_PREREQ(2.61)
 AC_COPYRIGHT([Copyright (C) 2009 Alaska Communications Systems Group, Inc.])
 AC_REVISION(0.1)
-AC_INIT([Clam Antivirus Client Library],[0.1],[opensource@acsalaska.net],[clamavc])
+AC_INIT([Clam Antivirus Client Library],[0.1],[clamavc-devs@lists.sourceforge.net],[clamavc])
 
 # Library Version Info (used by libtool)
 #    Current    -- the current version number of this API
