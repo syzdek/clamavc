@@ -137,6 +137,9 @@ int my_config PARAMS((int argc, char * argv[], MyConfig * cnfp));
 // scans files/directories in the stack
 int my_scan PARAMS((MyConfig * cnf));
 
+// scans STDIN in the stack
+int my_scan_stdin PARAMS((CLAMAVC * clamp, int fildes));
+
 // dequeues data from the stack
 char * my_stack_dequeue PARAMS((MyConfig * cnfp));
 
@@ -175,8 +178,8 @@ int main (int argc, char * argv[])
    textdomain (PACKAGE);
 #endif
 
-   if (my_config(argc, argv, &cnf))
-      return(1);
+   if ((err = my_config(argc, argv, &cnf)))
+      return(err);
    if (!(cnf.clamp))
       return(0);
 
@@ -202,6 +205,7 @@ int my_config(int argc, char * argv[], MyConfig * cnfp)
    int          opt_index;
    int          c;
    int          i;
+   int          err;
    unsigned     uval;
    const char * str;
 
@@ -301,23 +305,6 @@ int my_config(int argc, char * argv[], MyConfig * cnfp)
       };
    };
 
-   if (optind == argc)
-   {
-      fprintf(stderr, _("%s: missing required argument.\n"), PROGRAM_NAME);
-      fprintf(stderr, _("Try `%s --help' for more information.\n"), PROGRAM_NAME);
-      return(-1);
-   };
-
-   for(i = argc; i > optind; i--)
-   {
-      if ((my_stack_push(cnfp, argv[i-1], NULL)))
-      {
-         clamavc_close(cnfp->clamp);
-         cnfp->clamp = NULL;
-         return(-1);
-      };
-   };
-
    if (cnfp->verbose)
    {
       if (!(str = clamavc_version(cnfp->clamp)))
@@ -328,6 +315,37 @@ int my_config(int argc, char * argv[], MyConfig * cnfp)
          return(1);
       };
       printf("%s\n", str);
+   };
+
+   if (optind == argc)
+   {
+      switch(err = my_scan_stdin(cnfp->clamp, STDIN_FILENO))
+      {
+         case -1:
+            fprintf(stderr, "STDIN_FILENO: %s\n", strerror(errno));
+            err = 1;
+            break;
+         case 0:
+            break;
+         default:
+            err = 2;
+            if (!(cnfp->quiet))
+               fprintf(stderr, "%s\n", clamavc_error(cnfp->clamp));
+            break;
+      };
+      clamavc_close(cnfp->clamp);
+      cnfp->clamp = NULL;
+      return(err);
+   };
+
+   for(i = argc; i > optind; i--)
+   {
+      if ((my_stack_push(cnfp, argv[i-1], NULL)))
+      {
+         clamavc_close(cnfp->clamp);
+         cnfp->clamp = NULL;
+         return(-1);
+      };
    };
 
    return(0);
@@ -348,6 +366,34 @@ int my_scan(MyConfig * cnfp)
 
    while((path = my_stack_pop(cnfp)))
    {
+      // processes STDIN_FILENO
+      if (!(strcmp(path, "-")))
+      {
+         if (cnfp->verbose)
+            printf("processing <STDIN>\n");
+         switch(err = my_scan_stdin(cnfp->clamp, STDIN_FILENO))
+         {
+            case -1:
+               fprintf(stderr, "%s: %s\n", path, strerror(errno));
+               free(path);
+               return(1);
+            case 0:
+               break;
+            default:
+               err = 2;
+               if (!(cnfp->quiet))
+                  fprintf(stderr, "%s\n", clamavc_error(cnfp->clamp));
+               if (!(cnfp->cont))
+               {
+                  free(path);
+                  return(err);
+               };
+               break;
+         };
+         free(path);
+         continue;
+      };
+
       // stat file for file type and file size
       if ((stat(path, &sb)) == -1)
       {
@@ -418,6 +464,21 @@ int my_scan(MyConfig * cnfp)
    };
 
    return(err);
+}
+
+
+/// scans STDIN in the stack
+/// @param[out] cnfp     pointer to config data
+int my_scan_stdin(CLAMAVC * clamp, int fildes)
+{
+   int  len;
+   char buff[1024];
+   while((len = read(fildes, buff, 1024)) > 0)
+      if (clamavc_instream(clamp, buff, (unsigned)len))
+         return(-1);
+   if (len == -1)
+      return(-1);
+   return(clamavc_instream(clamp, NULL, 0));
 }
 
 
