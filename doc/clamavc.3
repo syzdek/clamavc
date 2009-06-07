@@ -1,0 +1,95 @@
+.\"
+.\" Clam Antivirus Client Library
+.\" Copyright (C) 2009 David M. Syzdek <david@syzdek.net>
+.\"
+.\" @ACS_LICENSE_HEADER_START@
+.\"
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 2 of the License, or
+.\" (at your option) any later version.
+.\"
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\" GNU General Public License for more details.
+.\"
+.\" You should have received a copy of the GNU General Public License along
+.\" with this program; if not, write to the Free Software Foundation, Inc.,
+.\" 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+.\"
+.\" @ACS_LICENSE_HEADER_END@
+.\"
+.\" doc/clamavc.3 - man page for libclamavc.la
+.\"
+.TH "CLAMAVC" "3" "June 2009" "Clam Antivirus Client" "Library"
+.SH NAME
+clamavc \- Clam AntiVirus Client Library
+.SH LIBRARY
+ClamAVC (libclamavc, -lclamavc)
+.SH SYNOPSIS
+\fB#include <clamavc>\fR
+
+.SH DESCRIPTION
+The \fBlibclamavc\fR library implements the protocol used by ClamAV's daemon.
+The library is able to communicate using either TCP sockets or Unix domain
+sockets.  If connecting to a remote clamd instance using TCP, some of the
+functions may not work properly.
+
+.SH INDEX
+.TP
+clamavc_close(3)
+closes ClamAV client library session and frees resources
+.TP
+clamavc_contscan(3)
+recursively scans a directory without stopping if a virus is found
+.TP
+clamavc_error(3)
+returns message from clamd
+.TP
+clamavc_initialize(3)
+initialize ClamAV client library session
+.TP
+clamavc_instream(3)
+sends chuncked data to the server
+.TP
+clamavc_instream_fildes(3)
+sends opened file as chuncked data to the server
+.TP
+clamavc_instream_file(3)
+sends file as chuncked data to the server
+.TP
+clamavc_libversion(3)
+returns library's version
+.TP
+clamavc_multiscan(3)
+recursively scans a directory using multiple threads
+.TP
+clamavc_ping(3)
+checks the daemon's state
+.TP
+clamavc_reload(3)
+reloads the daemon's databases
+.TP
+clamavc_reset(3)
+resets the ClamAV client library session
+.TP
+clamavc_scan(3)
+scans a file or directory with archive support enabled
+.TP
+clamavc_set_opt(3)
+sets a library options
+.TP
+clamavc_shutdown(3)
+shuts down the server
+.TP
+clamavc_version(3)
+returns the daemon's version
+
+.SH "REPORTING BUGS"
+Report bugs to <clamavc-devs@lists.sourceforge.net>.
+
+.SH "SEE ALSO"
+.BR clamavc (3),
+.BR clamd (8)
+.\" end of man page

@@ -62,7 +62,8 @@ check_PROGRAMS				= tests/contscan-clean \
 					  tests/idsession-all
 include_HEADERS				= lib/clamavc.h
 lib_LTLIBRARIES				= lib/libclamavc.la
-man_MANS				= doc/clamavc.1
+man_MANS				= doc/clamavc.1 \
+					  doc/clamavc.3
 
 
 # macros for data/invert-file
