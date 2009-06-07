@@ -41,6 +41,7 @@
 #
 clamavc_close
 clamavc_contscan
+clamavc_error
 clamavc_initialize
 clamavc_instream
 clamavc_instream_fildes

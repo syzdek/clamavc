@@ -39,6 +39,7 @@
 #include <clamavc.h>
 #endif
 
+#include <errno.h>
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
@@ -376,6 +377,7 @@ int32_t clamavc_contscan(CLAMAVC * clamp, const char * path)
    if (clamp->verbose > 1)
       printf("<== %s\n", &buff[offset]);
 
+   strncpy(clamp->msg, &buff[offset], CLAMAVC_MSG_LEN);
    if (!(strcmp(&buff[offset], "OK")))
    {
       clamavc_reset(clamp);
@@ -385,6 +387,16 @@ int32_t clamavc_contscan(CLAMAVC * clamp, const char * path)
    clamavc_reset(clamp);
 
    return(1);
+}
+
+
+/// returns last error code
+/// @param[in]  clamp    pointer to ClamAV Client session data
+const char * clamavc_error(CLAMAVC * clamp)
+{
+   if (clamp)
+      return(clamp->msg);
+   return("unknown status");
 }
 
 
@@ -558,6 +570,7 @@ int32_t clamavc_instream(CLAMAVC * clamp, const char * src, size_t nbyte)
    offset += 2;
    if (clamp->verbose > 1)
       printf("<== %s\n", &buff[offset]);
+   strncpy(clamp->msg, &buff[offset], CLAMAVC_MSG_LEN);
    if (!(strcmp(&buff[offset], "OK")))
       return(0);
 
@@ -666,6 +679,7 @@ int32_t clamavc_multiscan(CLAMAVC * clamp, const char * path)
    if (clamp->verbose > 1)
       printf("<== %s\n", &buff[offset]);
 
+   strncpy(clamp->msg, &buff[offset], CLAMAVC_MSG_LEN);
    if (!(strcmp(&buff[offset], "OK")))
    {
       clamavc_reset(clamp);
@@ -704,6 +718,7 @@ int32_t clamavc_ping(CLAMAVC * clamp)
    };
 
    buff[len] = '\0';
+   strncpy(clamp->msg, buff, CLAMAVC_MSG_LEN);
    if (clamp->verbose > 1)
       printf("<<< %s\n", buff);
 
@@ -738,7 +753,9 @@ int32_t clamavc_read(CLAMAVC * clamp, char * dst, size_t nbyte)
    added = 0;
 
    if ((added = read(clamp->s, &dst[pos], nbyte-pos-1)) == -1)
+   {
       return(-1);
+   };
    pos += added;
    dst[pos] = '\0';
 
@@ -802,6 +819,7 @@ int32_t clamavc_reload(CLAMAVC * clamp)
    };
 
    buff[len] = '\0';
+   strncpy(clamp->msg, buff, CLAMAVC_MSG_LEN);
    if (clamp->verbose > 1)
       printf("<<< %s\n", buff);
 
@@ -893,6 +911,7 @@ int32_t clamavc_scan(CLAMAVC * clamp, const char * path)
    if (clamp->verbose > 1)
       printf("<== %s\n", &buff[offset]);
 
+   strncpy(clamp->msg, &buff[offset], CLAMAVC_MSG_LEN);
    if (!(strcmp(&buff[offset], "OK")))
       return(0);
 
@@ -1006,6 +1025,7 @@ const char * clamavc_version(CLAMAVC * clamp)
    };
 
    clamp->version[len] = '\0';
+   strncpy(clamp->msg, clamp->version, CLAMAVC_MSG_LEN);
    if (clamp->verbose > 1)
       printf("<<< %s\n", clamp->version);
 

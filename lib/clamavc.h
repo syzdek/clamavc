@@ -157,8 +157,8 @@ CLAMAVC_F(void) clamavc_close PARAMS((CLAMAVC * clamp));
 CLAMAVC_F(int32_t) clamavc_contscan PARAMS((CLAMAVC * clamp,
    const char * dir));
 
-// frees memory allocated by library
-CLAMAVC_F(char *) clamavc_free PARAMS((CLAMAVC * clamp, void * ptr));
+// returns last error code
+CLAMAVC_F(const char *) clamavc_error PARAMS((CLAMAVC * clamp));
 
 // initialize ClamAV client library session
 CLAMAVC_F(CLAMAVC *) clamavc_initialize PARAMS((void));
