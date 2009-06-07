@@ -68,7 +68,7 @@ Downloading source code from Git requires the following software:
 
 Downloading source code:
 
- $ git clone git://github.com/syzdek/clamavc.git
+ $ git clone git://clamavc.git.sourceforge.net/gitroot/clamavc
 
 Preparing the source for compiling:
 
