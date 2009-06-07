@@ -45,6 +45,7 @@ clamavc_initialize
 clamavc_instream
 clamavc_instream_fildes
 clamavc_instream_file
+clamavc_libversion
 clamavc_multiscan
 clamavc_ping
 clamavc_reload

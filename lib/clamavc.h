@@ -175,6 +175,9 @@ CLAMAVC_F(int32_t) clamavc_instream_fildes PARAMS((CLAMAVC * clamp,
 CLAMAVC_F(int32_t) clamavc_instream_file PARAMS((CLAMAVC * clamp,
    const char * file));
 
+// returns daemon's version
+CLAMAVC_F(const char *) clamavc_libversion PARAMS((void));
+
 // recursively scans a directory using multiple threads
 CLAMAVC_F(int32_t) clamavc_multiscan PARAMS((CLAMAVC * clamp,
    const char * path));

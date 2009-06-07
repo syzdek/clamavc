@@ -31,6 +31,10 @@
 //           //
 ///////////////
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #ifndef _CLAMAVC_H
 #include <clamavc.h>
 #endif
@@ -61,6 +65,22 @@
 
 #ifndef INET6_ADDRSTRLEN
 #define INET6_ADDRSTRLEN   512
+#endif
+
+#ifndef PACKAGE_BUGREPORT
+#define PACKAGE_BUGREPORT "opensource@acsalaska.net"
+#endif
+
+#ifndef PACKAGE_NAME
+#define PACKAGE_NAME ""
+#endif
+
+#ifndef PACKAGE_VERSION
+#define PACKAGE_VERSION ""
+#endif
+
+#ifndef PROGRAM_NAME
+#define PROGRAM_NAME "clamavc"
 #endif
 
 
@@ -583,6 +603,13 @@ int32_t clamavc_instream_file(CLAMAVC * clamp, const char * file)
    close(fd);
 
    return(err);
+}
+
+
+/// returns daemon's version
+const char * clamavc_libversion(void)
+{
+   return("libclamavc.la (" PACKAGE_NAME ") " PACKAGE_VERSION);
 }
 
 
