@@ -346,7 +346,7 @@ int my_scan(MyConfig * cnfp)
 
    err = 0;
 
-   while((path = my_stack_dequeue(cnfp)))
+   while((path = my_stack_pop(cnfp)))
    {
       // stat file for file type and file size
       if ((stat(path, &sb)) == -1)
