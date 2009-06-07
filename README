@@ -29,6 +29,9 @@ Table of Contents
 2 Obtaining Source Code
 3 TODO List
 4 Submitting Patches
+  5.1 Commits
+  5.2 Developer's Certificate of Origin
+  5.3 Patches
 5 Additional Resources
 
 
@@ -50,7 +53,6 @@ ClamAVC has been tested on the following platforms:
  * OS X 10.5.8
  * FreeBSD 6.2
  * Slackware 12.1.0
-
 
 
 2 Obtaining Source Code
@@ -81,7 +83,6 @@ Preparing the source for compiling:
 2. TODO List
 ============
 
- * write README file.
  * write man pages for the functions.
  * document the API in texinfo.
  * let bake in production setting
@@ -92,7 +93,82 @@ Preparing the source for compiling:
 4. Submitting Patches
 =====================
 
-To be written.
+Submit patches to clamavc-devs@lists.sourceforge.net. Please use the same
+guidelines for submitting patches to the Git project:
+
+http://repo.or.cz/w/git.git/Documentation/SubmittingPatches?a=blob;h=76fc8;hb=HEAD
+
+A copy of the short version is included below.
+
+
+5.1 Commits
+-----------
+
+ * make commits of logical units
+ * check for unnecessary whitespace with "git diff --check" before committing
+ * do not check in commented out code or unneeded files
+ * the first line of the commit message should be a short and should skip the
+   full stop
+ * the body should provide a meaningful commit message, which:
+   - uses the imperative, present tense: "change", not "changed" or "changes".
+   - includes motivation for the change, and contrasts its implementation
+     with previous behaviour
+ * if you want your work included in git.git, add a "Signed-off-by: Your Name
+   <you@example.com>" line to the commit message (or just use the option "-s"
+   when committing) to confirm that you agree to the Developer's Certificate
+   of Origin
+ * make sure that you have tests for the bug you are fixing
+ * make sure that the test suite passes after your commit
+
+
+5.2 Developer's Certificate of Origin
+-------------------------------------
+
+        Developer's Certificate of Origin 1.1
+
+        By making a contribution to this project, I certify that:
+
+        (a) The contribution was created in whole or in part by me and I
+            have the right to submit it under the open source license
+            indicated in the file; or
+
+        (b) The contribution is based upon previous work that, to the best
+            of my knowledge, is covered under an appropriate open source
+            license and I have the right under that license to submit that
+            work with modifications, whether created in whole or in part
+            by me, under the same open source license (unless I am
+            permitted to submit under a different license), as indicated
+            in the file; or
+
+        (c) The contribution was provided directly to me by some other
+            person who certified (a), (b) or (c) and I have not modified
+            it.
+
+        (d) I understand and agree that this project and the contribution
+            are public and that a record of the contribution (including all
+            personal information I submit with it, including my sign-off) is
+            maintained indefinitely and may be redistributed consistent with
+            this project or the open source license(s) involved.
+
+
+5.3 Patches
+-----------
+
+ * use "git format-patch -M" to create the patch
+ * do not PGP sign your patch
+ * do not attach your patch, but read in the mail body, unless you cannot
+   teach your mailer to leave the formatting of the patch alone.
+ * be careful doing cut & paste into your mailer, not to corrupt whitespaces.
+ * provide additional information (which is unsuitable for the commit message)
+   between the "---" and the diffstat
+ * if you change, add, or remove a command line option or make some other user
+   interface change, the associated documentation should be updated as well.
+ * if your name is not writable in ASCII, make sure that you send off a
+   message in the correct encoding.
+ * send the patch to the list (clamavc-devs@lists.sourceforge.net) and the
+   maintainer (david@syzdek.net) if (and only if) the patch is ready for
+   inclusion. If you use git-send-email(1), please test it first by sending
+   email to yourself.
 
 
 5. Additional Resources
@@ -100,6 +176,9 @@ To be written.
 
 ClamAV Client Library source code:
    http://github.com/syzdek/clamavc/tree
+
+ClamAV Client Library Developers' List:
+   clamavc-devs@lists.sourceforge.net
 
 ClamAV:
    http://www.clamav.net/
@@ -110,9 +189,3 @@ Clamd documentation:
 Potential Sourceforge page:
    http://sourceforge.net/projects/clamavc/
 
-
---
-Clam Antivirus Client Library
-Copyright (C) 2009 Alaska Communications Systems Group, Inc
-
-Written by David M. Syzdek <david.syzdek@acsalaska.net>.
