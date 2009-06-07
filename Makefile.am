@@ -45,6 +45,7 @@ EXTRA_DATA				= data/clean.txt \
 					  data/clean.tar.gz \
 					  data/infected.tar.gz \
 					  data/infected.txt
+bin_PROGRAMS				= src/clamavc
 noinst_PROGRAMS				= src/clamavc-contscan \
 					  src/clamavc-instream \
 					  src/clamavc-multiscan \
@@ -88,6 +89,15 @@ lib_libclamavc_la_LDFLAGS		= -rpath '$(libdir)' \
 					  $(AM_LDFLAGS) \
 					  -export-symbols $(srcdir)/lib/libclamavc.sym
 lib_libclamavc_la_SOURCES		= lib/clamavc.h lib/libclamavc.c
+
+
+# macros for src/clamavc
+src_clamavc_DEPENDENCIES		= Makefile lib/libclamavc.la
+src_clamavc_CPPFLAGS			= -DPROGRAM_NAME="\"clamavc\"" $(AM_CPPFLAGS)
+src_clamavc_CFLAGS			= $(AM_CFLAGS)
+src_clamavc_LDFLAGS			= $(AM_LDFLAGS)
+src_clamavc_LDADD			= $(AM_LDADD) lib/libclamavc.la
+src_clamavc_SOURCES			= src/clamavc.c
 
 
 # macros for src/clamavc-contscan
