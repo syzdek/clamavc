@@ -395,7 +395,7 @@ int my_scan(MyConfig * cnfp)
       };
 
       // stat file for file type and file size
-      if ((stat(path, &sb)) == -1)
+      if ((lstat(path, &sb)) == -1)
       {
          fprintf(stderr, "%s: %s\n", path, strerror(errno));
          free(path);
@@ -403,7 +403,7 @@ int my_scan(MyConfig * cnfp)
       };
 
       // append contents for directory to stack
-      if (sb.st_mode & S_IFDIR)
+      if ( (sb.st_mode & S_IFMT) ==  S_IFDIR )
       {
          if (!(d = opendir(path)))
          {
@@ -436,7 +436,7 @@ int my_scan(MyConfig * cnfp)
       };
 
       // scan file for viruses
-      if (!(sb.st_mode & S_IFDIR))
+      if ( (sb.st_mode & S_IFMT) ==  S_IFREG )
       {
          if (cnfp->verbose)
             printf("processing %s\n", path);
@@ -460,6 +460,13 @@ int my_scan(MyConfig * cnfp)
                break;
          };
       };
+
+      if (!(sb.st_mode & (S_IFREG|S_IFDIR)))
+      {
+         if (cnfp->verbose)
+            printf("skipping %s\n", path);
+      };
+
       free(path);
    };
 
