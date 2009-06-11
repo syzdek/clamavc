@@ -119,6 +119,7 @@
 ///////////////////
 
 // ClamAV Client defaults
+#define CLAMAVC_BUFFSIZE           4096
 #define CLAMAVC_HOST               "localhost"
 #define CLAMAVC_PORT               3310
 #define CLAMAVC_SOCKET             NULL
@@ -131,6 +132,7 @@
 #define CLAMAVC_OPORT              0x02
 #define CLAMAVC_OSTREAMMAXLEN      0x04
 #define CLAMAVC_OVERBOSE           0x05
+#define CLAMAVC_OBUFFSIZE          0x06
 
 
 /////////////////

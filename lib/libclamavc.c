@@ -100,7 +100,9 @@ struct clamavc
    unsigned    verbose;      ///< toggle verbose mode
    unsigned    idsess;       ///< IDSESSION state
    unsigned    instream;     ///< INSTREAM state
+   size_t      buffsize;     ///< size of buffer
    char      * host;         ///< network host running the ClamAV daemon
+   char      * buff;         ///< read buffer for file operations
    char        version[CLAMAVC_VER_LEN];
    char        msg[CLAMAVC_MSG_LEN];
 };
@@ -469,6 +471,15 @@ CLAMAVC * clamavc_initialize(void)
    clamp->verbose        = data[VERBOSE]       ? strtoul(data[VERBOSE], NULL, 0)       : CLAMAVC_VERBOSE;
    host                  = data[HOST]          ? data[HOST]                            : CLAMAVC_HOST;
 
+   // allocates buffer
+   clamp->buffsize = CLAMAVC_BUFFSIZE;
+   if (!(clamp->buff = malloc(CLAMAVC_BUFFSIZE)))
+   {
+      clamavc_close(clamp);
+      errno = ENOMEM;
+      return(NULL);
+   };
+
    // save host name to data struct
    if (!(clamp->host = strdup(host)))
    {
@@ -584,13 +595,12 @@ int32_t clamavc_instream(CLAMAVC * clamp, const char * src, size_t nbyte)
 int32_t clamavc_instream_fildes(CLAMAVC * clamp, int fildes)
 {
    int            len;
-   char           buff[1024];
 
    if (lseek(fildes, (off_t)0, SEEK_SET) == -1)
       return(-1);
 
-   while((len = read(fildes, buff, 1024)) > 0)
-      if (clamavc_instream(clamp, buff, (unsigned)len))
+   while((len = read(fildes, clamp->buff, clamp->buffsize)) > 0)
+      if (clamavc_instream(clamp, clamp->buff, (unsigned)clamp->buffsize))
          return(-1);
 
    if (len == -1)
@@ -925,11 +935,22 @@ int32_t clamavc_scan(CLAMAVC * clamp, const char * path)
 /// @param[in]  valp     pointer to new value of option
 int32_t clamavc_set_opt(CLAMAVC * clamp, uint32_t opt, const void * valp)
 {
+   size_t   size;
+   char   * ptr;
+
    if ( (!(clamp)) || (!(opt)) )
       return(errno = EINVAL);
 
    switch(opt)
    {
+      case CLAMAVC_OBUFFSIZE:
+         size = *((const size_t *)valp) ? *((const size_t *)valp) : CLAMAVC_OBUFFSIZE;
+         if (!(ptr = realloc(clamp->buff, size)))
+            return(errno = ENOMEM);
+         clamp->buff = ptr;
+         clamp->buffsize = size;
+         break;
+
       case CLAMAVC_OHOST:
          if (clamp->host)
             free(clamp->host);
