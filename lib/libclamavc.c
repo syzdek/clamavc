@@ -935,8 +935,9 @@ int32_t clamavc_scan(CLAMAVC * clamp, const char * path)
 /// @param[in]  valp     pointer to new value of option
 int32_t clamavc_set_opt(CLAMAVC * clamp, uint32_t opt, const void * valp)
 {
-   size_t   size;
-   char   * ptr;
+   size_t       size;
+   char       * ptr;
+   const char * cptr;
 
    if ( (!(clamp)) || (!(opt)) )
       return(errno = EINVAL);
@@ -944,7 +945,9 @@ int32_t clamavc_set_opt(CLAMAVC * clamp, uint32_t opt, const void * valp)
    switch(opt)
    {
       case CLAMAVC_OBUFFSIZE:
-         size = *((const size_t *)valp) ? *((const size_t *)valp) : CLAMAVC_OBUFFSIZE;
+         size = CLAMAVC_BUFFSIZE;
+         if (valp)
+            size = *((const size_t *)valp) ? *((const size_t *)valp) : size;
          if (!(ptr = realloc(clamp->buff, size)))
             return(errno = ENOMEM);
          clamp->buff = ptr;
@@ -952,12 +955,14 @@ int32_t clamavc_set_opt(CLAMAVC * clamp, uint32_t opt, const void * valp)
          break;
 
       case CLAMAVC_OHOST:
+         cptr = CLAMAVC_HOST;
+         if (valp)
+            cptr = ((const char *)valp) ? ((const char *)valp) : cptr;
+         if (!(ptr = strdup(cptr)))
+            return(errno = ENOMEM);
          if (clamp->host)
             free(clamp->host);
-         clamp->host = NULL;
-         if (valp)
-            if (!(clamp->host = strdup((const char *)valp)))
-               return(errno = ENOMEM);
+         clamp->host = ptr;
          break;
 
       case CLAMAVC_OPORT:
@@ -969,11 +974,13 @@ int32_t clamavc_set_opt(CLAMAVC * clamp, uint32_t opt, const void * valp)
       case CLAMAVC_OSTREAMMAXLEN:
          clamp->streamMaxLen = CLAMAVC_STREAMMAXLEN;
          if (valp)
-            clamp->streamMaxLen = *((const int *)valp);
+            clamp->streamMaxLen = *((const unsigned *)valp) ? *((const unsigned *)valp) : clamp->streamMaxLen;
+         if (clamp->streamMaxLen < 32)
+            clamp->streamMaxLen = 32;
          break;
 
       case CLAMAVC_OVERBOSE:
-         clamp->verbose = 0;
+         clamp->verbose = CLAMAVC_VERBOSE;
          if (valp)
             clamp->verbose = *((const int *)valp);
          break;
