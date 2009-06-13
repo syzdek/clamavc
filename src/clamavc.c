@@ -88,6 +88,7 @@ struct clamavc_config
    int       quiet;
    int       recursive;
    int       verbose;
+   size_t     filesize;
    CLAMAVC  * clamp;
    MyStack  * stack;
    MyStack  * queue;
@@ -209,7 +210,7 @@ int my_config(int argc, char * argv[], MyConfig * cnfp)
    unsigned     uval;
    const char * str;
 
-   static char   short_opt[] =  "ach:Hp:qrs:vV";
+   static char   short_opt[] =  "ach:Hp:qrs:S:vV";
    static struct option long_opt[] =
    {
       {"continue",      no_argument, 0, 'c'},
@@ -224,6 +225,7 @@ int my_config(int argc, char * argv[], MyConfig * cnfp)
 
    memset(cnfp, 0, sizeof(MyConfig));
    cnfp->verbose      = 0;
+   cnfp->filesize     = (1024*1024*15);
    opt_index          = 0;
 
    if (!(cnfp->clamp = clamavc_initialize()))
@@ -280,6 +282,11 @@ int my_config(int argc, char * argv[], MyConfig * cnfp)
          case 's':
             uval = strtoul(optarg, NULL, 0);
             clamavc_set_opt(cnfp->clamp, CLAMAVC_OSTREAMMAXLEN, &uval);
+            break;
+
+         case 'S':
+            uval = strtoul(optarg, NULL, 0);
+            cnfp->filesize = uval;
             break;
 
          case 'v':
@@ -440,6 +447,13 @@ int my_scan(MyConfig * cnfp)
       {
          if (cnfp->verbose)
             printf("processing %s\n", path);
+         // checks size of file/directory
+         if (sb.st_size > cnfp->filesize)
+         {
+            if (!(cnfp->quiet))
+               fprintf(stderr, "%s: skipping due to file size\n", path);
+            continue;
+         };
          switch(clamavc_instream_file(cnfp->clamp, path))
          {
             case -1:
@@ -463,8 +477,8 @@ int my_scan(MyConfig * cnfp)
 
       if (!(sb.st_mode & (S_IFREG|S_IFDIR)))
       {
-         if (cnfp->verbose)
-            printf("skipping %s\n", path);
+         if (!(cnfp->quiet))
+            fprintf(stderr, "%s: skipping due to file type\n", path);
       };
 
       free(path);
@@ -599,6 +613,7 @@ void my_usage(void)
          "  -p port                   TCP port number of ClamAV server\n"
          "  -r                        recursively scan directories\n"
          "  -s bytes                  max stream chunk size to send\n"
+         "  -S bytes                  max file size of file to process\n"
          "  -v, --verbose             print verbose messages\n"
          "  -V, --version             print version number and exit\n"
          "\nReport bugs to <%s>.\n"
