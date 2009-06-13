@@ -210,7 +210,7 @@ int my_config(int argc, char * argv[], MyConfig * cnfp)
    unsigned     uval;
    const char * str;
 
-   static char   short_opt[] =  "ach:Hp:qrs:S:vV";
+   static char   short_opt[] =  "ab:ch:Hp:qrs:S:vV";
    static struct option long_opt[] =
    {
       {"continue",      no_argument, 0, 'c'},
@@ -244,6 +244,11 @@ int my_config(int argc, char * argv[], MyConfig * cnfp)
 
          case 'a':
             cnfp->hidden = 1;
+            break;
+
+         case 'b':
+            uval = strtoul(optarg, NULL, 0);
+            clamavc_set_opt(cnfp->clamp, CLAMAVC_OBUFFSIZE, &uval);
             break;
 
          case 'c':
@@ -606,6 +611,7 @@ void my_usage(void)
    // PACKAGE_BUGREPORT
    printf(_("Usage: %s [options] file\n"
          "  -a                        process hidden files and directories\n"
+         "  -b bytes                  buffer size used for scanning file\n"
          "  -c                        continue if virus is found\n"
          "  -h host                   host name of ClamAV daemon\n"
          "  -H, --help                print this help and exit\n"
