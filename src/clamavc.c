@@ -412,7 +412,9 @@ int my_scan(MyConfig * cnfp)
       {
          fprintf(stderr, "%s: %s\n", path, strerror(errno));
          free(path);
-         return(1);
+         if (!(cnfp->cont))
+            return(1);
+         continue;
       };
 
       // append contents for directory to stack
