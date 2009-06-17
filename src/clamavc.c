@@ -378,11 +378,12 @@ int my_scan(MyConfig * cnfp)
 
    while((path = my_stack_pop(cnfp)))
    {
+      if (cnfp->verbose)
+         printf("processing %s\n", path);
+
       // processes STDIN_FILENO
       if (!(strcmp(path, "-")))
       {
-         if (cnfp->verbose)
-            printf("processing <STDIN>\n");
          switch(err = my_scan_stdin(cnfp->clamp, STDIN_FILENO))
          {
             case -1:
@@ -445,13 +446,12 @@ int my_scan(MyConfig * cnfp)
             };
          };
          closedir(d);
+         continue;
       };
 
       // scan file for viruses
       if ( (sb.st_mode & S_IFMT) ==  S_IFREG )
       {
-         if (cnfp->verbose)
-            printf("processing %s\n", path);
          // checks size of file/directory
          if (sb.st_size > cnfp->filesize)
          {
@@ -478,13 +478,11 @@ int my_scan(MyConfig * cnfp)
                };
                break;
          };
+         continue;
       };
 
-      if (!(sb.st_mode & (S_IFREG|S_IFDIR)))
-      {
-         if (!(cnfp->quiet))
-            fprintf(stderr, "%s: skipping due to file type\n", path);
-      };
+      if (!(cnfp->quiet))
+         fprintf(stderr, "%s: skipping due to file type\n", path);
 
       free(path);
    };
